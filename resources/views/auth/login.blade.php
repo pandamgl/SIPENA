@@ -181,6 +181,13 @@
         <div class="login-card">
             <h2 class="login-title">LOGIN</h2>
 
+            @if ($errors->any())
+                <div
+                    style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 12px; text-align: center;">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
             <form action="{{ route('login') }}" method="POST">
                 @csrf
 

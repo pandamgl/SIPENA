@@ -6,11 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'SIPENA Admin')</title>
 
-    <!-- Memanggil Library Ikon dari FontAwesome & Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     @stack('styles')
+
+    <style>
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #e51b24;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            width: 100%;
+            text-align: left;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background-color: #ffe6e6;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 
 <body>
@@ -19,7 +42,7 @@
     <aside class="sidebar">
         <div class="profile-section">
             <div class="profile-circle"></div>
-            <div class="profile-name">Admin Humas</div>
+            <div class="profile-name">{{ Auth::user()->nama_lengkap ?? 'Admin Humas' }}</div>
         </div>
 
         <ul class="menu-list">
@@ -49,9 +72,13 @@
         <!-- Topbar Kanan Atas -->
         <div class="topbar">
             <i class="fa-regular fa-bell bell-icon"></i>
-            <div class="user-dropdown">
-                <i class="fa-regular fa-circle-user"></i>
-                <i class="fa-solid fa-chevron-down" style="font-size: 14px;"></i>
+            <div class="user-dropdown" style="position: relative;">
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="logout-btn" title="Keluar dari sistem">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </form>
             </div>
         </div>
 

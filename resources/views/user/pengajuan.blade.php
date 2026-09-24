@@ -4,121 +4,7 @@
 
 @push('styles')
     <style>
-        /* Reset & Font Setup */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #ffffff;
-            color: #333;
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 260px;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            padding-top: 40px;
-            flex-shrink: 0;
-        }
-
-        .profile-section {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .profile-circle {
-            width: 120px;
-            height: 120px;
-            background-color: #e0e0e0;
-            border-radius: 50%;
-            margin: 0 auto 15px auto;
-        }
-
-        .profile-name {
-            font-size: 16px;
-            color: #1a1a1a;
-            font-weight: 500;
-        }
-
-        .menu-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .menu-item {
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-            color: #333;
-            font-size: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .menu-item i {
-            font-size: 18px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .menu-item.active {
-            background-color: #ffcdd2;
-            color: #1a1a1a;
-            border-top-right-radius: 25px;
-            border-bottom-right-radius: 25px;
-            margin-right: 10px;
-        }
-
-        .menu-item:hover:not(.active) {
-            background-color: #f5f5f5;
-            border-top-right-radius: 25px;
-            border-bottom-right-radius: 25px;
-            margin-right: 10px;
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: #ffffff;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 25px;
-            padding: 20px 40px;
-        }
-
-        .bell-icon {
-            font-size: 24px;
-            color: #333;
-            cursor: pointer;
-        }
-
-        .user-dropdown {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: #e0e0e0;
-            padding: 8px 15px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
+        /* Header Halaman (Banner Abu-abu) */
         .page-header {
             background-color: #f0f0f0;
             padding: 20px 40px;
@@ -131,6 +17,7 @@
             font-weight: 600;
         }
 
+        /* Form Area */
         .form-container {
             padding: 0 40px 50px 40px;
             max-width: 1000px;
@@ -151,6 +38,7 @@
             color: #1a1a1a;
         }
 
+        /* Styling Input Box (Abu-abu terang) */
         .form-control {
             width: 100%;
             padding: 14px 18px;
@@ -178,6 +66,7 @@
             color: #666;
         }
 
+        /* Layout Grid untuk Form */
         .grid-3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -190,17 +79,20 @@
             gap: 20px;
         }
 
+        /* Khusus input tanggal berdampingan (Dari - Sampai) */
         .date-range {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
+        /* Textarea untuk Narasi */
         textarea.form-control {
             resize: vertical;
             min-height: 150px;
         }
 
+        /* Tombol Kirim (Hijau) */
         .btn-submit {
             background-color: #2ed573;
             color: white;
@@ -236,7 +128,13 @@
 
     <!-- Formulir Pengajuan -->
     <div class="form-container">
-        <form action="#" method="POST">
+        @if(session('success'))
+            <div style="padding: 15px; background-color: #d4edda; color: #155724; border-radius: 8px; margin-bottom: 20px;">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <form action="{{ route('user.pengajuan.store') }}" method="POST">
             @csrf
 
             <!-- SECTION I -->
@@ -244,20 +142,17 @@
             <div class="grid-3">
                 <div>
                     <label class="form-label">1. Nama</label>
-                    <input type="text" class="form-control" placeholder="Masukan nama" required>
+                    <input type="text" class="form-control" value="{{ Auth::user()->nama_lengkap ?? 'AGAM YOGI PRASETYO' }}"
+                        readonly>
                 </div>
                 <div>
                     <label class="form-label">2. NIM/NIK</label>
-                    <input type="text" class="form-control" placeholder="Masukan NIM/NIK" required>
+                    <input type="text" class="form-control" value="{{ Auth::user()->nim_nik ?? '2211102281' }}" readonly>
                 </div>
                 <div>
                     <label class="form-label">3. Prodi/Unit</label>
-                    <select class="form-control" required>
-                        <option value="">Pilih Prodi/Unit</option>
-                        <option value="S1 Teknik Informatika">S1 Teknik Informatika</option>
-                        <option value="S1 Rekayasa Perangkat Lunak">S1 Rekayasa Perangkat Lunak</option>
-                        <option value="S1 Sistem Informasi">S1 Sistem Informasi</option>
-                    </select>
+                    <input type="text" class="form-control"
+                        value="{{ Auth::user()->prodiUnit->nama_prodi_unit ?? 'S1 Teknik Informatika' }}" readonly>
                 </div>
             </div>
 
@@ -265,28 +160,26 @@
             <h3 class="section-title">II. Informasi Dasar Kegiatan</h3>
             <div style="margin-bottom: 20px;">
                 <label class="form-label">1. Judul Berita atau Kegiatan</label>
-                <input type="text" class="form-control" placeholder="Masukkan judul berita atau kegiatan" required>
+                <input type="text" name="judul_berita" class="form-control"
+                    placeholder="Masukkan judul berita atau kegiatan" required>
             </div>
 
             <div class="grid-2">
                 <div>
                     <label class="form-label">2. Kategori Berita</label>
-                    <select class="form-control" required>
+                    <select name="kategori_id" class="form-control" required>
                         <option value="">Pilih Kategori</option>
-                        <option value="Riset Dosen">Riset Dosen</option>
-                        <option value="Prestasi Mahasiswa">Prestasi Mahasiswa</option>
-                        <option value="Pengabdian Masyarakat">Pengabdian Masyarakat</option>
-                        <option value="Event Kampus">Event Kampus</option>
-                        <option value="Kerjasama">Kerjasama</option>
-                        <option value="ETC">ETC.</option>
+                        @foreach($kategoriList as $kategori)
+                            <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div>
                     <label class="form-label">3. Tanggal Pelaksanaan</label>
                     <div class="date-range">
-                        <input type="date" class="form-control" required title="Tanggal Mulai">
+                        <input type="date" name="tanggal_mulai" class="form-control" required title="Tanggal Mulai">
                         <span style="font-weight: bold;"> - </span>
-                        <input type="date" class="form-control" required title="Tanggal Selesai">
+                        <input type="date" name="tanggal_selesai" class="form-control" required title="Tanggal Selesai">
                     </div>
                 </div>
             </div>
@@ -294,19 +187,20 @@
             <!-- SECTION III -->
             <h3 class="section-title">III. Narasi Berita</h3>
             <div>
-                <textarea class="form-control" placeholder="Jelaskan rincian kegiatan dan memuat unsur 5W+1H"
-                    required></textarea>
+                <textarea name="narasi_berita" class="form-control"
+                    placeholder="Jelaskan rincian kegiatan dan memuat unsur 5W+1H" required></textarea>
             </div>
 
             <!-- SECTION IV -->
             <h3 class="section-title">IV. Lampiran dan Kontak</h3>
             <div style="margin-bottom: 20px;">
                 <label class="form-label">1. Link Dokumentasi (min. 3 Foto)</label>
-                <input type="url" class="form-control" placeholder="URL Drive" required>
+                <input type="url" name="link_dokumentasi" class="form-control" placeholder="URL Drive" required>
             </div>
             <div>
                 <label class="form-label">2. Kontak Person</label>
-                <input type="text" class="form-control" placeholder="+628....." style="width: 50%;" required>
+                <input type="text" name="kontak_person" class="form-control" placeholder="+628....." style="width: 50%;"
+                    required>
             </div>
 
             <!-- Tombol Submit -->

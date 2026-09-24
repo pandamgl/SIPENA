@@ -4,121 +4,6 @@
 
 @push('styles')
     <style>
-        /* Reset & Font Setup */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 260px;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            padding-top: 40px;
-            flex-shrink: 0;
-        }
-
-        .profile-section {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .profile-circle {
-            width: 120px;
-            height: 120px;
-            background-color: #e0e0e0;
-            border-radius: 50%;
-            margin: 0 auto 15px auto;
-        }
-
-        .profile-name {
-            font-size: 16px;
-            color: #1a1a1a;
-            font-weight: 500;
-        }
-
-        .menu-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .menu-item {
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-            color: #333;
-            font-size: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .menu-item i {
-            font-size: 18px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .menu-item.active {
-            background-color: #ffcdd2;
-            color: #1a1a1a;
-            border-top-right-radius: 25px;
-            border-bottom-right-radius: 25px;
-            margin-right: 10px;
-        }
-
-        .menu-item:hover:not(.active) {
-            background-color: #f5f5f5;
-            border-top-right-radius: 25px;
-            border-bottom-right-radius: 25px;
-            margin-right: 10px;
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .topbar {
-            background-color: #ffffff;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 25px;
-            padding: 20px 40px;
-        }
-
-        .bell-icon {
-            font-size: 24px;
-            color: #333;
-            cursor: pointer;
-        }
-
-        .user-dropdown {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: #e0e0e0;
-            padding: 8px 15px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
         .page-header {
             background-color: #f0f0f0;
             padding: 20px 40px;
@@ -305,27 +190,35 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>08/09/2026</td>
-                    <td>Mahasiswa Tel-U Raih Juara 1 UI/UX Nasional</td>
-                    <td>Prestasi Mahasiswa</td>
-                    <td><span class="badge badge-publish">Publish</span></td>
-                    <td><a href="#" style="color: #0066cc;">Link</a></td>
-                </tr>
-                <tr>
-                    <td>09/09/2026</td>
-                    <td>Pengembangan AI untuk Deteksi Dini Banjir</td>
-                    <td>Riset Dosen</td>
-                    <td><span class="badge badge-progress">In Progress</span></td>
-                    <td>-</td>
-                </tr>
-                <tr>
-                    <td>10/09/2026</td>
-                    <td>Seminar Technopreneurship 2026</td>
-                    <td>Event Kampus</td>
-                    <td><span class="badge badge-rejected">Rejected</span></td>
-                    <td>-</td>
-                </tr>
+                @forelse($pengajuan as $item)
+                    <tr>
+                        <td>{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d/m/Y') }}</td>
+                        <td>{{ $item->judul_berita }}</td>
+                        <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
+                        <td>
+                            @if($item->status == 'In Review')
+                                <span class="badge badge-review">In Review</span>
+                            @elseif($item->status == 'In Progress')
+                                <span class="badge badge-progress">In Progress</span>
+                            @elseif($item->status == 'Publish')
+                                <span class="badge badge-publish">Publish</span>
+                            @else
+                                <span class="badge badge-rejected">Rejected</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($item->link_publikasi)
+                                <a href="{{ $item->link_publikasi }}" target="_blank" style="color: #0066cc;">Link</a>
+                            @else
+                                -
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Belum ada data pengajuan berita.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
 
@@ -333,7 +226,6 @@
         <div class="pagination">
             <button class="page-btn">Previous</button>
             <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
             <button class="page-btn">Next</button>
         </div>
 
