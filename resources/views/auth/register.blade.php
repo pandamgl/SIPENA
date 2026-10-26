@@ -160,7 +160,17 @@
 
 <body>
     <div class="bg-container">
-        <div class="register-card">
+                <div class="register-card">
+
+            @if ($errors->any())
+                <div style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 13px;">
+                    <ul style="margin: 0; padding-left: 18px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <!-- Form Registrasi Laravel -->
             <form action="{{ route('register.proses') }}" method="POST">
@@ -184,11 +194,19 @@
                     <label class="form-label">Prodi / Unit</label>
                     <div class="input-wrapper">
                         <select name="prodi_unit_id" class="form-input" required>
-                            <option value="" disabled selected>Pilih prodi / unit</option>
-                            <option value="1" {{ old('prodi_unit_id') == 1 ? 'selected' : '' }}>S1 Teknik Informatika</option>
-                            <option value="2" {{ old('prodi_unit_id') == 2 ? 'selected' : '' }}>S1 Sistem Informasi</option>
-                            <option value="3" {{ old('prodi_unit_id') == 3 ? 'selected' : '' }}>S1 Rekayasa Perangkat Lunak</option>
-                            <option value="4" {{ old('prodi_unit_id') == 4 ? 'selected' : '' }}>Humas / Internal</option>
+                            <option value="" disabled {{ old('prodi_unit_id') ? '' : 'selected' }}>Pilih prodi / unit</option>
+                            @if(isset($prodiList) && $prodiList->count() > 0)
+                                @foreach($prodiList as $p)
+                                    <option value="{{ $p->id }}" {{ old('prodi_unit_id') == $p->id ? 'selected' : '' }}>
+                                        {{ $p->nama_prodi_unit }}
+                                    </option>
+                                @endforeach
+                            @else
+                                <option value="1" {{ old('prodi_unit_id') == 1 ? 'selected' : '' }}>S1 Teknik Informatika</option>
+                                <option value="6" {{ old('prodi_unit_id') == 6 ? 'selected' : '' }}>S1 Rekayasa Perangkat Lunak</option>
+                                <option value="4" {{ old('prodi_unit_id') == 4 ? 'selected' : '' }}>S1 Data Sains</option>
+                                <option value="3" {{ old('prodi_unit_id') == 3 ? 'selected' : '' }}>Humas / Internal</option>
+                            @endif
                         </select>
                         <i class="fa-solid fa-chevron-down input-icon" style="pointer-events: none;"></i>
                     </div>

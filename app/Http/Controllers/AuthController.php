@@ -6,16 +6,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\ProdiUnit;
 
 class AuthController extends Controller
 {
-    //Menampilkan Form Login
+    // Menampilkan Form Login
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    //Login
+    // Login
     public function login(Request $request)
     {
         $request->validate([
@@ -71,7 +72,52 @@ class AuthController extends Controller
         ])->onlyInput('username');
     }
 
-    //Logout
+    // Menampilkan Form Register
+    public function showRegister()
+    {
+        $prodiList = ProdiUnit::all();
+        return view('auth.register', compact('prodiList'));
+    }
+
+    // Proses Register
+    public function register(Request $request)
+    {
+        $request->validate([
+            'nama' => ['nullable', 'string', 'max:100'],
+            'nama_lengkap' => ['nullable', 'string', 'max:100'],
+            'nim_nik' => ['required', 'string', 'max:30'],
+            'prodi_unit_id' => ['required', 'exists:prodi_unit,id'],
+            'username' => ['required', 'string', 'max:50', 'unique:users,username'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ], [
+            'username.unique' => 'Username sudah terdaftar, silakan pilih username lain.',
+            'email.unique' => 'Email sudah terdaftar, silakan gunakan email lain.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'password.min' => 'Password minimal terdiri dari 6 karakter.',
+            'prodi_unit_id.exists' => 'Pilihan program studi / unit tidak valid.',
+        ]);
+
+        $namaLengkap = $request->input('nama') ?: $request->input('nama_lengkap');
+
+        $user = User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'plain_password' => $request->password,
+            'nama_lengkap' => $namaLengkap,
+            'nim_nik' => $request->nim_nik,
+            'prodi_unit_id' => $request->prodi_unit_id,
+            'role' => 'pengaju',
+        ]);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('user.dashboard'));
+    }
+
+    // Logout
     public function logout(Request $request)
     {
         Auth::logout();
