@@ -4,6 +4,7 @@
 
 @push('styles')
     <style>
+        /* Reset & Font Setup */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -168,7 +169,6 @@
             border: 1px solid #ccc;
             outline: none;
             font-family: inherit;
-            background-color: #fff;
         }
 
         .right-controls {
@@ -275,6 +275,28 @@
             font-size: 12px;
         }
 
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 5px;
+        }
+
+        .page-btn {
+            padding: 6px 12px;
+            border: none;
+            background-color: #e0e0e0;
+            color: #333;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .page-btn.active {
+            background-color: #e51b24;
+            color: white;
+        }
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -366,59 +388,40 @@
     <div class="table-panel">
         <h3 class="panel-title">Rentang Waktu</h3>
 
-        <!-- FORM FILTER / SORTING -->
-        <form method="GET" action="{{ route('admin.pengajuan.index') }}" id="filterForm">
-            <div class="table-controls-top">
-                <div class="time-range-group">
-                    <select name="bulan" class="control-select" onchange="document.getElementById('filterForm').submit()">
-                        <option value="">Bulan</option>
-                        <option value="1" {{ request('bulan') == '1' ? 'selected' : '' }}>Januari</option>
-                        <option value="2" {{ request('bulan') == '2' ? 'selected' : '' }}>Februari</option>
-                        <option value="3" {{ request('bulan') == '3' ? 'selected' : '' }}>Maret</option>
-                        <option value="4" {{ request('bulan') == '4' ? 'selected' : '' }}>April</option>
-                        <option value="5" {{ request('bulan') == '5' ? 'selected' : '' }}>Mei</option>
-                        <option value="6" {{ request('bulan') == '6' ? 'selected' : '' }}>Juni</option>
-                        <option value="7" {{ request('bulan') == '7' ? 'selected' : '' }}>Juli</option>
-                        <option value="8" {{ request('bulan') == '8' ? 'selected' : '' }}>Agustus</option>
-                        <option value="9" {{ request('bulan') == '9' ? 'selected' : '' }}>September</option>
-                        <option value="10" {{ request('bulan') == '10' ? 'selected' : '' }}>Oktober</option>
-                        <option value="11" {{ request('bulan') == '11' ? 'selected' : '' }}>November</option>
-                        <option value="12" {{ request('bulan') == '12' ? 'selected' : '' }}>Desember</option>
-                    </select>
-
-                    <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="control-input" title="Tanggal Mulai" onchange="document.getElementById('filterForm').submit()">
-                </div>
-
-                <div class="right-controls">
-                    <select name="kategori" class="control-select" onchange="document.getElementById('filterForm').submit()">
-                        <option value="">Semua Kategori</option>
-                        @isset($kategoriList)
-                            @foreach($kategoriList as $kat)
-                                <option value="{{ $kat->id }}" {{ request('kategori') == $kat->id ? 'selected' : '' }}>
-                                    {{ $kat->nama_kategori }}
-                                </option>
-                            @endforeach
-                        @endisset
-                    </select>
-
-                    <select name="status" class="control-select" onchange="document.getElementById('filterForm').submit()">
-                        <option value="">Semua Status</option>
-                        <option value="In Review" {{ request('status') == 'In Review' ? 'selected' : '' }}>In Review</option>
-                        <option value="In Progress" {{ request('status') == 'In Progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="Publish" {{ request('status') == 'Publish' ? 'selected' : '' }}>Publish</option>
-                        <option value="Rejected" {{ request('status') == 'Rejected' ? 'selected' : '' }}>Rejected</option>
-                    </select>
-
-                    @if(request()->anyFilled(['bulan', 'tanggal', 'kategori', 'status']))
-                        <a href="{{ route('admin.pengajuan.index') }}" style="color: #e51b24; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap;">Reset</a>
-                    @endif
-
-                    <button type="button" class="btn-add" id="btnTambahBerita">
-                        <i class="fa-solid fa-plus"></i> Tambah Berita
-                    </button>
-                </div>
+        <div class="table-controls-top">
+            <div class="time-range-group">
+                <select class="control-select">
+                    <option>Bulan</option>
+                    <option>Januari</option>
+                    <option>Februari</option>
+                    <option>Maret</option>
+                </select>
+                <input type="date" class="control-input" title="Tanggal Mulai">
             </div>
-        </form>
+
+            <div class="right-controls">
+                <select class="control-select" id="filterKategoriAdmin">
+                    <option value="">Semua Kategori</option>
+                    @isset($kategoriList)
+                        @foreach($kategoriList as $kat)
+                            <option value="{{ $kat->nama_kategori }}">{{ $kat->nama_kategori }}</option>
+                        @endforeach
+                    @endisset
+                </select>
+
+                <select class="control-select" id="filterStatusAdmin">
+                    <option value="">Semua Status</option>
+                    <option value="In Review">In Review</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Publish">Publish</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+
+                <button class="btn-add" id="btnTambahBerita">
+                    <i class="fa-solid fa-plus"></i> Tambah Berita
+                </button>
+            </div>
+        </div>
 
         <table class="data-table">
             <thead>
@@ -431,18 +434,27 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tablePengajuanBody">
                 @forelse($pengajuanList as $item)
-                    <tr>
+                    <tr class="table-row-item" data-kategori="{{ $item->kategori->nama_kategori ?? '' }}" data-status="{{ $item->status }}">
                         <td>{{ $item->user->prodiUnit->nama_prodi_unit ?? '-' }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d/m/Y') }}</td>
-                        <td><a href="{{ route('admin.pengajuan.show', $item->id) }}" class="btn-judul">{{ $item->judul_berita }}</a></td>
+                        <td>
+                            <a href="{{ route('admin.pengajuan.show', $item->id) }}" class="btn-judul">
+                                {{ $item->judul_berita }}
+                            </a>
+                        </td>
                         <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
                         <td>
-                            <form action="{{ route('admin.pengajuan.updateStatus', $item->id) }}" method="POST" class="status-form">
+                            <form id="form-status-{{ $item->id }}" action="{{ route('admin.pengajuan.updateStatus', $item->id) }}" method="POST">
                                 @csrf
-                                @method('PUT')
-                                <select name="status" class="status-select" onchange="this.form.submit()">
+                                @method('PATCH')
+                                <select name="status" class="status-select" 
+                                    data-id="{{ $item->id }}" 
+                                    data-current="{{ $item->status }}" 
+                                    data-show-url="{{ route('admin.pengajuan.show', $item->id) }}" 
+                                    data-link="{{ $item->link_publikasi ?? '' }}" 
+                                    data-alasan="{{ $item->alasan_reject ?? '' }}">
                                     <option value="In Review" {{ $item->status == 'In Review' ? 'selected' : '' }}>In Review</option>
                                     <option value="In Progress" {{ $item->status == 'In Progress' ? 'selected' : '' }}>In Progress</option>
                                     <option value="Publish" {{ $item->status == 'Publish' ? 'selected' : '' }}>Publish</option>
@@ -450,83 +462,58 @@
                                 </select>
                             </form>
                         </td>
-                        <td class="aksi-cell">
-                            @if($item->status == 'Publish')
-                                <form action="{{ route('admin.pengajuan.updateStatus', $item->id) }}" method="POST" class="aksi-input-group">
-                                    @csrf
-                                    @method('PUT')
-                                    <input type="hidden" name="status" value="Publish">
-                                    <input type="url" name="link_publikasi" value="{{ $item->link_publikasi }}" placeholder="Masukkan Link Drive" title="Link Drive" required>
-                                    <button type="submit" class="btn-save-aksi" title="Simpan"><i class="fa-solid fa-check"></i></button>
-                                </form>
-                            @elseif($item->status == 'Rejected')
-                                <form action="{{ route('admin.pengajuan.updateStatus', $item->id) }}" method="POST" class="aksi-input-group">
-                                    @csrf
-                                    @method('PUT')
-                                    <input type="hidden" name="status" value="Rejected">
-                                    <input type="text" name="catatan" placeholder="Masukkan Alasan" title="Alasan Penolakan" required>
-                                    <button type="submit" class="btn-save-aksi" title="Simpan"><i class="fa-solid fa-check"></i></button>
-                                </form>
-                            @else
-                                <a href="{{ route('admin.pengajuan.show', $item->id) }}" class="action-link">Lihat / Edit</a>
-                            @endif
+                        <td class="aksi-cell" id="aksi-cell-{{ $item->id }}">
+                            <a href="{{ route('admin.pengajuan.show', $item->id) }}" class="action-link">Lihat / Edit</a>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align: center;">Belum ada pengajuan berita dari user.</td>
+                        <td colspan="6" style="text-align: center;">Belum ada pengajuan berita masuk.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
 
-        <div style="margin-top: 20px;">
+        <div class="pagination">
             {{ $pengajuanList->links() }}
         </div>
     </div>
 
-    <!-- OVERLAY TAMBAH BERITA ADMIN (LANGSUNG PUBLISH) -->
+    <!-- OVERLAY TAMBAH BERITA ADMIN -->
     <div class="modal-overlay" id="modalTambahBerita">
         <div class="modal-content">
             <i class="fa-solid fa-xmark close-modal" id="closeModal"></i>
             <h2 class="modal-title">Tambah Berita Publikasi</h2>
 
-            <form action="{{ route('admin.pengajuan.store') }}" method="POST">
+            <form action="#" method="POST">
                 @csrf
                 <div class="form-group">
-                    <label>Judul Berita</label>
-                    <input type="text" name="judul_berita" class="modal-input" placeholder="Masukkan judul" required>
-                </div>
-                <div class="form-group">
-                    <label>Kategori Berita</label>
-                    <select name="kategori_id" class="modal-input" required>
-                        <option value="">Pilih Kategori</option>
-                        @isset($kategoriList)
-                            @foreach($kategoriList as $kat)
-                                <option value="{{ $kat->id }}">{{ $kat->nama_kategori }}</option>
-                            @endforeach
-                        @endisset
+                    <label>Prodi/Unit Asal</label>
+                    <select class="modal-input" required>
+                        <option value="">Pilih Unit</option>
+                        <option>Humas / Internal</option>
+                        <option>S1 Teknik Informatika</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Tanggal Mulai</label>
-                    <input type="date" name="tanggal_mulai" class="modal-input" required>
+                    <label>Judul Berita</label>
+                    <input type="text" class="modal-input" placeholder="Masukkan judul" required>
                 </div>
                 <div class="form-group">
-                    <label>Tanggal Selesai</label>
-                    <input type="date" name="tanggal_selesai" class="modal-input" required>
+                    <label>Kategori Berita</label>
+                    <select class="modal-input" required>
+                        <option value="">Pilih Kategori</option>
+                        <option>Info Kampus</option>
+                        <option>Prestasi</option>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label>Tautan Dokumentasi / Link Drive</label>
-                    <input type="url" name="link_dokumentasi" class="modal-input" placeholder="https://drive.google.com/..." required>
-                </div>
-                <div class="form-group">
-                    <label>Kontak Person</label>
-                    <input type="text" name="kontak_person" class="modal-input" placeholder="No HP / WhatsApp" required>
+                    <label>Tautan Gambar / Dokumentasi (Link Drive)</label>
+                    <input type="url" class="modal-input" placeholder="https://drive.google.com/..." required>
                 </div>
                 <div class="form-group">
                     <label>Isi/Narasi Singkat</label>
-                    <textarea name="narasi_berita" class="modal-textarea" placeholder="Tuliskan berita..." required></textarea>
+                    <textarea class="modal-textarea" placeholder="Tuliskan berita..." required></textarea>
                 </div>
                 <button type="submit" class="btn-submit-modal">Langsung Publish</button>
             </form>
@@ -553,5 +540,78 @@
                 modal.style.display = "none";
             }
         }
+
+        const statusSelects = document.querySelectorAll('.status-select');
+
+        function updateAksiCell(selectElement) {
+            const id = selectElement.getAttribute('data-id');
+            const showUrl = selectElement.getAttribute('data-show-url');
+            const currentStatus = selectElement.getAttribute('data-current');
+            const currentLink = selectElement.getAttribute('data-link') || '';
+            const currentAlasan = selectElement.getAttribute('data-alasan') || '';
+            const aksiCell = document.getElementById('aksi-cell-' + id);
+            if (!aksiCell) return;
+
+            const status = selectElement.value;
+
+            if (status === 'Publish') {
+                aksiCell.innerHTML = `
+                    <div class="aksi-input-group">
+                        <input type="url" name="link_publikasi" value="${currentLink}" placeholder="Masukkan Link Publikasi" title="Link Publikasi" form="form-status-${id}" required>
+                        <button type="submit" form="form-status-${id}" class="btn-save-aksi" title="Simpan Publish"><i class="fa-solid fa-check"></i></button>
+                    </div>
+                `;
+            } else if (status === 'Rejected') {
+                aksiCell.innerHTML = `
+                    <div class="aksi-input-group">
+                        <input type="text" name="catatan" value="${currentAlasan}" placeholder="Masukkan Alasan Penolakan" title="Alasan Penolakan" form="form-status-${id}" required>
+                        <button type="submit" form="form-status-${id}" class="btn-save-aksi" title="Simpan Penolakan"><i class="fa-solid fa-check"></i></button>
+                    </div>
+                `;
+            } else if (status !== currentStatus) {
+                aksiCell.innerHTML = `
+                    <div class="aksi-input-group" style="align-items: center;">
+                        <span style="font-size: 11px; color: #555;">Simpan?</span>
+                        <button type="submit" form="form-status-${id}" class="btn-save-aksi" title="Simpan Status"><i class="fa-solid fa-check"></i></button>
+                    </div>
+                `;
+            } else {
+                aksiCell.innerHTML = `<a href="${showUrl}" class="action-link">Lihat / Edit</a>`;
+            }
+        }
+
+        statusSelects.forEach(select => {
+            select.addEventListener('change', function () {
+                updateAksiCell(this);
+            });
+            updateAksiCell(select);
+        });
+
+        // Filter tabel admin berdasarkan kategori dan status
+        const filterKategoriAdmin = document.getElementById('filterKategoriAdmin');
+        const filterStatusAdmin = document.getElementById('filterStatusAdmin');
+        const tableRowsAdmin = document.querySelectorAll('.table-row-item');
+
+        function filterAdminTable() {
+            const selectedKat = (filterKategoriAdmin ? filterKategoriAdmin.value : '').toLowerCase();
+            const selectedStatus = (filterStatusAdmin ? filterStatusAdmin.value : '').toLowerCase();
+
+            tableRowsAdmin.forEach(row => {
+                const rowKat = (row.getAttribute('data-kategori') || '').toLowerCase();
+                const rowStatus = (row.getAttribute('data-status') || '').toLowerCase();
+
+                const matchKat = !selectedKat || rowKat.includes(selectedKat);
+                const matchStatus = !selectedStatus || rowStatus === selectedStatus;
+
+                if (matchKat && matchStatus) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        if (filterKategoriAdmin) filterKategoriAdmin.addEventListener('change', filterAdminTable);
+        if (filterStatusAdmin) filterStatusAdmin.addEventListener('change', filterAdminTable);
     </script>
 @endpush

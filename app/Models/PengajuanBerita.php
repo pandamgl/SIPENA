@@ -41,4 +41,23 @@ class PengajuanBerita extends Model
     {
         return $this->hasMany(LogAksiAdmin::class, 'pengajuan_id');
     }
+
+    // Relasi ke log aksi admin terbaru
+    public function latestLogAksi()
+    {
+        return $this->hasOne(LogAksiAdmin::class, 'pengajuan_id')->latestOfMany();
+    }
+
+    // Accessor: Mengambil alasan reject dari log aksi admin terbaru yang berstatus Rejected
+    public function getAlasanRejectAttribute()
+    {
+        if (!empty($this->attributes['catatan'])) {
+            return $this->attributes['catatan'];
+        }
+        if (!empty($this->attributes['alasan_penolakan'])) {
+            return $this->attributes['alasan_penolakan'];
+        }
+        $log = $this->logAksi()->where('status_baru', 'Rejected')->latest('id')->first();
+        return $log ? $log->catatan : null;
+    }
 }

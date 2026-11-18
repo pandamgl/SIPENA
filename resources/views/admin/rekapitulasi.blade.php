@@ -191,7 +191,6 @@
             border: 1px solid #ccc;
             outline: none;
             font-family: inherit;
-            background-color: #fff;
         }
 
         .data-table {
@@ -261,61 +260,39 @@
 @endpush
 
 @section('content')
-    <!-- Header Halaman & Tombol Unduh Laporan Excel -->
+    <!-- Header Halaman & Tombol Unduh Laporan -->
     <div class="page-header">
         <h1>Rekapitulasi</h1>
-        <a href="{{ route('admin.rekapitulasi', array_merge(request()->all(), ['export' => 'excel'])) }}" class="btn-download-excel">
+        <a href="#" class="btn-download-excel">
             <i class="fa-solid fa-file-excel"></i> Unduh Laporan
         </a>
     </div>
 
     <!-- Area Konten Utama -->
     <div class="table-panel">
-        <h3 class="panel-title">Rentang Waktu & Filter</h3>
+        <h3 class="panel-title">Rentang Waktu</h3>
 
-        <!-- FORM FILTER & SORTING -->
-        <form method="GET" action="{{ route('admin.rekapitulasi') }}" id="rekapFilterForm">
-            <div class="table-controls-top">
-                <div class="time-range-group">
-                    <select name="bulan" class="control-select" onchange="document.getElementById('rekapFilterForm').submit()">
-                        <option value="">Pilih Bulan</option>
-                        <option value="1" {{ request('bulan') == '1' ? 'selected' : '' }}>Januari</option>
-                        <option value="2" {{ request('bulan') == '2' ? 'selected' : '' }}>Februari</option>
-                        <option value="3" {{ request('bulan') == '3' ? 'selected' : '' }}>Maret</option>
-                        <option value="4" {{ request('bulan') == '4' ? 'selected' : '' }}>April</option>
-                        <option value="5" {{ request('bulan') == '5' ? 'selected' : '' }}>Mei</option>
-                        <option value="6" {{ request('bulan') == '6' ? 'selected' : '' }}>Juni</option>
-                        <option value="7" {{ request('bulan') == '7' ? 'selected' : '' }}>Juli</option>
-                        <option value="8" {{ request('bulan') == '8' ? 'selected' : '' }}>Agustus</option>
-                        <option value="9" {{ request('bulan') == '9' ? 'selected' : '' }}>September</option>
-                        <option value="10" {{ request('bulan') == '10' ? 'selected' : '' }}>Oktober</option>
-                        <option value="11" {{ request('bulan') == '11' ? 'selected' : '' }}>November</option>
-                        <option value="12" {{ request('bulan') == '12' ? 'selected' : '' }}>Desember</option>
-                    </select>
-
-                    <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="control-input" title="Tanggal" onchange="document.getElementById('rekapFilterForm').submit()">
-                </div>
-                
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <select name="kategori" class="control-select" onchange="document.getElementById('rekapFilterForm').submit()">
-                        <option value="">Filter Kategori</option>
-                        @isset($kategoriList)
-                            @foreach($kategoriList as $kat)
-                                <option value="{{ $kat->id }}" {{ request('kategori') == $kat->id ? 'selected' : '' }}>
-                                    {{ $kat->nama_kategori }}
-                                </option>
-                            @endforeach
-                        @endisset
-                    </select>
-
-                    @if(request()->anyFilled(['bulan', 'tanggal', 'kategori']))
-                        <a href="{{ route('admin.rekapitulasi') }}" style="color: #e51b24; text-decoration: none; font-weight: 600; font-size: 14px; white-space: nowrap;">Reset</a>
-                    @endif
-                </div>
+        <div class="table-controls-top">
+            <div class="time-range-group">
+                <select class="control-select">
+                    <option>Bulanan</option>
+                    <option>Tri-wulan (Q1)</option>
+                    <option>Tri-wulan (Q2)</option>
+                    <option>Tri-wulan (Q3)</option>
+                    <option>Tri-wulan (Q4)</option>
+                </select>
+                <input type="date" class="control-input" title="Tanggal">
             </div>
-        </form>
+            <div>
+                <select class="control-select">
+                    <option value="">Filter Kategori</option>
+                    <option value="Riset Dosen">Riset Dosen</option>
+                    <option value="Event Kampus">Event Kampus</option>
+                </select>
+            </div>
+        </div>
 
-        <!-- Tabel Rekap Data (Publish & Rejected) -->
+        <!-- Tabel Rekap Data -->
         <table class="data-table">
             <thead>
                 <tr>
@@ -328,34 +305,26 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($rekapData as $item)
-                    <tr>
-                        <td>{{ $item->user->prodiUnit->nama_prodi_unit ?? '-' }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d/m/Y') }}</td>
-                        <td>{{ $item->judul_berita }}</td>
-                        <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
-                        <td>
-                            <span style="font-weight: bold; color: {{ $item->status == 'Publish' ? '#2ecc71' : '#e74c3c' }}">
-                                {{ $item->status }}
-                            </span>
-                        </td>
-                        <td>
-                            @if($item->link_publikasi)
-                                <a href="{{ $item->link_publikasi }}" target="_blank" class="action-link">Link</a>
-                            @else
-                                -
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" style="text-align: center;">Belum ada data rekapitulasi berita Publish atau Rejected.</td>
-                    </tr>
-                @endforelse
+                <tr>
+                    <td>S1 Teknik Informatika</td>
+                    <td>dd/mm/yyyy</td>
+                    <td>XXXXXXXXXXXXXXXXXX</td>
+                    <td>Riset Dosen</td>
+                    <td>Publish</td>
+                    <td><a href="#" class="action-link">Link</a></td>
+                </tr>
+                <tr>
+                    <td>S1 Sistem Informasi</td>
+                    <td>dd/mm/yyyy</td>
+                    <td>XXXXXXXXXXXXXXXXXX</td>
+                    <td>Event Kampus</td>
+                    <td>Rejected</td>
+                    <td>-</td>
+                </tr>
             </tbody>
         </table>
 
-        <!-- AREA GRAFIK (CHART.JS DINAMIS) -->
+        <!-- AREA GRAFIK (CHART.JS) -->
         <div class="charts-container">
             <div class="chart-box">
                 <h4 class="chart-title">Pie Chart Kategori & Unit</h4>
@@ -377,15 +346,14 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Pie Chart Berdasarkan Kategori (Status Publish & Rejected)
         const pieCtx = document.getElementById('kategoriPieChart').getContext('2d');
         new Chart(pieCtx, {
             type: 'pie',
             data: {
-                labels: {!! json_encode($kategoriLabels) !!},
+                labels: ['Riset Dosen (Informatika)', 'Prestasi Mahasiswa', 'Event Kampus', 'Pengabdian Masyarakat'],
                 datasets: [{
-                    data: {!! json_encode($kategoriCounts) !!},
-                    backgroundColor: ['#ff0055', '#2ed573', '#1e90ff', '#feca57', '#9b59b6', '#34495e'],
+                    data: [35, 25, 20, 20],
+                    backgroundColor: ['#ff0055', '#2ed573', '#1e90ff', '#feca57'],
                     borderWidth: 1
                 }]
             },
@@ -400,7 +368,6 @@
             }
         });
 
-        // Bar Chart Status (Publish vs Rejected)
         const barCtx = document.getElementById('statusBarChart').getContext('2d');
         new Chart(barCtx, {
             type: 'bar',
@@ -408,7 +375,7 @@
                 labels: ['Publish', 'Rejected'],
                 datasets: [{
                     label: 'Jumlah Berita',
-                    data: [{{ $countPublish }}, {{ $countRejected }}],
+                    data: [65, 8],
                     backgroundColor: ['#ff4d4f', '#ff4d4f'],
                     borderRadius: 4
                 }]

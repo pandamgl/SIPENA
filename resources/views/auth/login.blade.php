@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - SIPENA</title>
+    <title>SSO Login - Telkom University</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -70,12 +70,12 @@
             width: 100%;
             padding: 12px 40px 12px 15px;
             background-color: #e51b24;
+
             color: white;
             border: none;
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 14px;
-            outline: none;
         }
 
         /* Warna Teks Placeholder */
@@ -83,7 +83,7 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* Posisi dan Interaksi Ikon di dalam Kolom Input */
+        /* Posisi Ikon di dalam Kolom Input */
         .input-icon {
             position: absolute;
             right: 15px;
@@ -91,8 +91,6 @@
             transform: translateY(-50%);
             color: white;
             font-size: 16px;
-            cursor: pointer;
-            z-index: 10;
         }
 
         /* Toggle Switch "Remember Me" */
@@ -175,24 +173,6 @@
         .btn-submit:hover {
             background-color: #c4151e;
         }
-
-        /* Tautan Register */
-        .register-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 13px;
-            color: #333;
-        }
-
-        .register-link a {
-            color: #e51b24;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .register-link a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 
@@ -202,19 +182,21 @@
             <h2 class="login-title">LOGIN</h2>
 
             @if ($errors->any())
-                <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 12px; text-align: center;">
+                <div
+                    style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 12px; text-align: center;">
                     {{ $errors->first() }}
                 </div>
             @endif
 
-            <form action="{{ route('login') }}" method="POST" id="loginForm">
+            <form action="{{ route('login') }}" method="POST">
                 @csrf
 
                 <div class="form-group">
                     <label class="form-label">Username</label>
                     <div class="input-wrapper">
-                        <input type="text" name="username" id="usernameInput" class="form-input" placeholder="Username"
+                        <input type="text" name="username" class="form-input" placeholder="Username"
                             value="{{ old('username') }}" required autofocus>
+                        <!-- Ikon Profil -->
                         <i class="fa-regular fa-circle-user input-icon"></i>
                     </div>
                 </div>
@@ -222,16 +204,15 @@
                 <div class="form-group">
                     <label class="form-label">Password</label>
                     <div class="input-wrapper">
-                        <!-- Input Password dengan ID -->
-                        <input type="password" name="password" id="passwordInput" class="form-input" placeholder="Password" required>
-                        <!-- Ikon Gembok interaktif -->
-                        <i class="fa-solid fa-lock input-icon" id="togglePassword" title="Tampilkan Password"></i>
+                        <input type="password" name="password" class="form-input" placeholder="Password" required>
+                        <!-- Ikon Gembok -->
+                        <i class="fa-solid fa-lock input-icon"></i>
                     </div>
                 </div>
 
                 <div class="remember-me-group">
                     <label class="switch">
-                        <input type="checkbox" name="remember" id="rememberToggle">
+                        <input type="checkbox" name="remember" id="remember">
                         <span class="slider"></span>
                     </label>
                     <span class="remember-label">Remember me</span>
@@ -241,30 +222,8 @@
                     Log In <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </button>
             </form>
-
-            <div class="register-link">
-                Belum punya akun? <a href="{{ route('register') }}">Register!</a>
-            </div>
         </div>
     </div>
-
-    <!-- SCRIPT TOGGLE PASSWORD -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const passwordInput = document.getElementById("passwordInput");
-            const togglePassword = document.getElementById("togglePassword");
-
-            // Fitur Lihat / Sembunyikan Password
-            togglePassword.addEventListener("click", function () {
-                const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-                passwordInput.setAttribute("type", type);
-
-                // Ubah ikon gembok menjadi terbuka/tertutup
-                this.classList.toggle("fa-lock");
-                this.classList.toggle("fa-lock-open");
-            });
-        });
-    </script>
 </body>
 
 </html>

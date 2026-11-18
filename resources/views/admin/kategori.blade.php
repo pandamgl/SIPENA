@@ -393,7 +393,7 @@
             </li>
             <li>
                 <a href="{{ route('admin.users.index') }}" class="menu-item active">
-                    <i class="fa-solid fa-users-cog"></i> User Management
+                    <i class="fa-solid fa-users-gear"></i> Manajemen
                 </a>
             </li>
         </ul>
@@ -416,7 +416,7 @@
 
         <!-- Header Halaman & Navigasi Tab -->
         <div class="page-header">
-            <h1>User Management</h1>
+            <h1>Manajemen</h1>
             <div class="tabs-container">
                 <a href="{{ route('admin.users.index') }}" class="tab-link">Daftar Pengguna</a>
                 <a href="{{ route('admin.kategori.index') }}" class="tab-link active">Kategori Berita</a>

@@ -25,7 +25,6 @@ class SipenaSeeder extends Seeder
         // 3. Akun Admin
         User::create([
             'username' => 'admin',
-            'email' => 'admin@mail.com',
             'password' => Hash::make('password123'),
             'plain_password' => 'password123',
             'nama_lengkap' => 'Admin Humas',
@@ -37,7 +36,6 @@ class SipenaSeeder extends Seeder
         // 4. Akun User (Pengaju)
         User::create([
             'username' => '2211102281',
-            'email' => 'agm@gmail.com',
             'password' => Hash::make('password123'),
             'plain_password' => 'password123',
             'nama_lengkap' => 'AGAM YOGI PRASETYO',

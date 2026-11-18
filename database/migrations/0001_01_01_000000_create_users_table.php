@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('password', 255);
             $table->string('nama_lengkap', 100);
             $table->string('nim_nik', 30);
-            $table->unsignedBigInteger('prodi_unit_id')->nullable();
+            $table->foreignId('prodi_unit_id')->constrained('prodi_unit');
             $table->enum('role', ['pengaju', 'admin']);
             $table->rememberToken();
             $table->timestamps();

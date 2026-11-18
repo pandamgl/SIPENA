@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management - SIPENA</title>
+    <title>Manajemen - SIPENA</title>
 
     <!-- Memanggil Library Ikon dari FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -83,7 +83,7 @@
             text-align: center;
         }
 
-        /* Status Menu Aktif di User Management */
+        /* Status Menu Aktif di Management */
         .menu-item.active {
             background-color: #ffcdd2;
             color: #1a1a1a;
@@ -132,6 +132,7 @@
             cursor: pointer;
             font-size: 18px;
         }
+
         .logout-btn {
             background: none;
             border: none;
@@ -374,8 +375,9 @@
                 </a>
             </li>
             <li>
+                <!-- Menu Manajemen -->
                 <a href="{{ route('admin.users.index') }}" class="menu-item active">
-                    <i class="fa-solid fa-users-cog"></i> User Management
+                    <i class="fa-solid fa-users-gear"></i> Manajemen
                 </a>
             </li>
         </ul>
@@ -398,7 +400,8 @@
 
         <!-- Header Halaman & Navigasi Tab -->
         <div class="page-header">
-            <h1>User Management</h1>
+            <!-- Judul Halaman Diubah Menjadi Manajemen -->
+            <h1>Manajemen</h1>
             <div class="tabs-container">
                 <a href="{{ route('admin.users.index') }}" class="tab-link active">Daftar Pengguna</a>
                 <a href="{{ route('admin.kategori.index') }}" class="tab-link">Kategori Berita</a>
@@ -411,7 +414,6 @@
 
             <!-- Kontrol Tabel (Search & Tombol Tambah) -->
             <div class="table-controls">
-                <!-- Diberikan id="searchInput" -->
                 <input type="text" id="searchInput" class="search-input" placeholder="Cari pengguna...">
 
                 <button class="btn-add" id="btnTambahUser">
@@ -445,7 +447,7 @@
                             <td>{{ $user->prodiUnit->nama_prodi_unit ?? '-' }}</td>
                             <td>
                                 <div class="action-icons">
-                                    <!-- Tombol Edit (Memicu Modal Edit) -->
+                                    <!-- Tombol Edit -->
                                     <i class="fa-solid fa-pen btn-edit" title="Edit" 
                                        data-id="{{ $user->id }}"
                                        data-nama="{{ $user->nama_lengkap }}"
@@ -560,7 +562,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT INTERAKTIF (SEARCH, MODAL, & TOGGLE PASSWORD) -->
+    <!-- SCRIPT INTERAKTIF -->
     <script>
         // Fitur Live Search Bar
         const searchInput = document.getElementById('searchInput');

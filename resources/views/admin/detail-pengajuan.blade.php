@@ -150,7 +150,17 @@
             font-size: 15px;
             margin-bottom: 8px;
             color: #1a1a1a;
-            font-weight: 500;
+        }
+
+        .form-control-bordered {
+            width: 100%;
+            padding: 14px 18px;
+            background-color: #ffffff;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #1a1a1a;
+            font-family: inherit;
         }
 
         .form-control-gray {
@@ -181,32 +191,42 @@
             gap: 20px;
         }
 
-        .date-range-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
         textarea.form-control-gray {
             resize: none;
             min-height: 150px;
         }
 
-        .link-preview-box {
-            background-color: #e3e3e3;
-            padding: 14px 18px;
-            border-radius: 8px;
-            font-size: 14px;
+        .upload-review-box {
+            width: 100%;
+            height: 250px;
+            border: 2px dashed #1a1a1a;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            background-color: #fafafa;
         }
 
-        .link-preview-box a {
-            color: #0066cc;
+        .btn-download-attachment {
+            background-color: #ff4d4f;
+            color: white;
+            border: none;
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            font-size: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.3s;
             text-decoration: none;
-            font-weight: 500;
         }
 
-        .link-preview-box a:hover {
-            text-decoration: underline;
+        .btn-download-attachment:hover {
+            background-color: #d9363e;
+            transform: scale(1.05);
         }
 
         .btn-kembali {
@@ -233,64 +253,75 @@
 @section('content')
     <!-- Banner Judul Halaman -->
     <div class="page-header">
-        <h1>Detail Pengajuan Berita</h1>
+        <h1>Pengajuan Berita</h1>
     </div>
 
-    <!-- Formulir Read-Only Sesuai Desain Asli -->
+    <!-- Formulir Read-Only untuk Admin -->
     <div class="form-container">
 
-        <!-- SECTION I: Informasi Pengguna -->
-        <h3 class="section-title">I. Informasi Pengguna</h3>
+        <!-- STATUS & CATATAN -->
+        @if($pengajuan->status == 'Rejected')
+            <div style="background-color: #fee2e2; border-left: 5px solid #ef4444; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px;">
+                <h4 style="color: #b91c1c; margin: 0 0 5px 0; font-size: 15px;"><i class="fa-solid fa-circle-exclamation"></i> Pengajuan Ditolak</h4>
+                <p style="margin: 0; color: #7f1d1d; font-size: 14px;"><strong>Alasan Penolakan:</strong> {{ $pengajuan->alasan_reject ?? ($pengajuan->logAksi->where('status_baru', 'Rejected')->last()->catatan ?? 'Tidak ada catatan.') }}</p>
+            </div>
+        @elseif($pengajuan->status == 'Publish')
+            <div style="background-color: #ecfdf5; border-left: 5px solid #10b981; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px;">
+                <h4 style="color: #047857; margin: 0 0 5px 0; font-size: 15px;"><i class="fa-solid fa-circle-check"></i> Pengajuan Telah Dipublikasikan</h4>
+                @if($pengajuan->link_publikasi)
+                    <p style="margin: 0; color: #065f46; font-size: 14px;"><strong>Tautan Berita:</strong> <a href="{{ $pengajuan->link_publikasi }}" target="_blank" style="color: #0066cc; text-decoration: underline;">{{ $pengajuan->link_publikasi }}</a></p>
+                @endif
+            </div>
+        @endif
+
+        <!-- SECTION I -->
+        <h3 class="section-title">I. Informasi Pengaju</h3>
         <div class="grid-3">
             <div>
                 <label class="form-label">1. Nama</label>
-                <input type="text" class="form-control-gray" value="{{ $pengajuan->user->nama_lengkap ?? '-' }}" readonly>
+                <input type="text" class="form-control-bordered" value="{{ $pengajuan->user->nama_lengkap ?? '-' }}" readonly>
             </div>
             <div>
-                <label class="form-label">2. NIM/NIK</label>
-                <input type="text" class="form-control-gray" value="{{ $pengajuan->user->nim_nik ?? '-' }}" readonly>
+                <label class="form-label">2. NIM / NIK</label>
+                <input type="text" class="form-control-bordered" value="{{ $pengajuan->user->nim_nik ?? '-' }}" readonly>
             </div>
             <div>
-                <label class="form-label">3. Prodi/Unit</label>
-                <input type="text" class="form-control-gray" value="{{ $pengajuan->user->prodiUnit->nama_prodi_unit ?? '-' }}" readonly>
+                <label class="form-label">3. Prodi / Unit</label>
+                <input type="text" class="form-control-bordered" value="{{ $pengajuan->user->prodiUnit->nama_prodi_unit ?? '-' }}" readonly>
             </div>
         </div>
 
-        <!-- SECTION II: Informasi Dasar Kegiatan -->
+        <!-- SECTION II -->
         <h3 class="section-title">II. Informasi Dasar Kegiatan</h3>
         <div style="margin-bottom: 20px;">
             <label class="form-label">1. Judul Berita atau Kegiatan</label>
             <input type="text" class="form-control-gray" value="{{ $pengajuan->judul_berita }}" readonly>
         </div>
 
-        <div class="grid-2" style="margin-bottom: 20px;">
+        <div class="grid-2">
             <div>
                 <label class="form-label">2. Kategori Berita</label>
-                <input type="text" class="form-control-gray" value="{{ $pengajuan->kategori->nama_kategori ?? '-' }}" readonly>
+                <input type="text" class="form-control-bordered" value="{{ $pengajuan->kategori->nama_kategori ?? '-' }}" readonly>
             </div>
             <div>
                 <label class="form-label">3. Tanggal Pelaksanaan</label>
-                <div class="date-range-wrapper">
-                    <input type="text" class="form-control-gray" value="{{ \Carbon\Carbon::parse($pengajuan->tanggal_mulai)->format('d/m/Y') }}" readonly>
-                    <span style="font-weight: bold;">-</span>
-                    <input type="text" class="form-control-gray" value="{{ \Carbon\Carbon::parse($pengajuan->tanggal_selesai)->format('d/m/Y') }}" readonly>
-                </div>
+                <input type="text" class="form-control-bordered" value="{{ \Carbon\Carbon::parse($pengajuan->tanggal_mulai)->format('d/m/Y') }} s/d {{ \Carbon\Carbon::parse($pengajuan->tanggal_selesai)->format('d/m/Y') }}" readonly>
             </div>
         </div>
 
-        <!-- SECTION III: Narasi Berita -->
-        <h3 class="section-title">III. Narasi Berita</h3>
+        <!-- SECTION III -->
+        <h3 class="section-title">III. Narasi Utama</h3>
         <div>
             <textarea class="form-control-gray" readonly>{{ $pengajuan->narasi_berita }}</textarea>
         </div>
 
-        <!-- SECTION IV: Lampiran dan Kontak -->
+        <!-- SECTION IV -->
         <h3 class="section-title">IV. Lampiran dan Kontak</h3>
         <div style="margin-bottom: 20px;">
-            <label class="form-label">1. Link Dokumentasi (min. 3 Foto)</label>
-            <div class="link-preview-box">
-                <a href="{{ $pengajuan->link_dokumentasi }}" target="_blank">
-                    <i class="fa-solid fa-link"></i> {{ $pengajuan->link_dokumentasi }}
+            <label class="form-label">1. Dokumentasi / Lampiran</label>
+            <div class="upload-review-box">
+                <a href="{{ $pengajuan->link_dokumentasi }}" target="_blank" class="btn-download-attachment" title="Buka Link Dokumentasi">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
                 </a>
             </div>
         </div>
@@ -300,7 +331,7 @@
         </div>
 
         <!-- Tombol Kembali -->
-        <a href="{{ route('admin.dashboard') }}" class="btn-kembali">Kembali</a>
+        <a href="{{ route('admin.pengajuan.index') }}" class="btn-kembali">Kembali</a>
 
     </div>
 @endsection

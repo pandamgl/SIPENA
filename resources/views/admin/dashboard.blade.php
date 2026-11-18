@@ -259,20 +259,8 @@
             display: inline-block;
         }
 
-        .badge-review {
-            background-color: #f39c12;
-        }
-
         .badge-progress {
             background-color: #3498db;
-        }
-
-        .badge-publish {
-            background-color: #2ecc71;
-        }
-
-        .badge-rejected {
-            background-color: #e74c3c;
         }
 
         .pagination {
@@ -311,25 +299,25 @@
         <div class="banner-image"></div>
     </div>
 
-    <!-- Kartu Statistik Dinamis -->
+    <!-- Kartu Statistik -->
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-info">
-                <h2>{{ $totalAntrean ?? 0 }}</h2>
+                <h2>{{ $antreanCount ?? 0 }}</h2>
                 <p>Antrean Pengajuan</p>
             </div>
             <i class="fa-regular fa-clock"></i>
         </div>
         <div class="stat-card">
             <div class="stat-info">
-                <h2>{{ $totalPublikasi ?? 0 }}</h2>
+                <h2>{{ $publikasiCount ?? 0 }}</h2>
                 <p>Publikasi Berita</p>
             </div>
             <i class="fa-regular fa-paper-plane"></i>
         </div>
         <div class="stat-card">
             <div class="stat-info">
-                <h2>{{ $totalPengajuanMasuk ?? 0 }}</h2>
+                <h2>{{ $masukCount ?? 0 }}</h2>
                 <p>Pengajuan Masuk</p>
             </div>
             <i class="fa-solid fa-inbox"></i>
@@ -351,11 +339,11 @@
                 entries
             </div>
             <div class="search-control">
-                Search: <input type="text" id="searchInput" placeholder="Cari data...">
+                Search: <input type="text">
             </div>
         </div>
 
-        <table class="data-table" id="tabelAntrean">
+        <table class="data-table">
             <thead>
                 <tr>
                     <th>Tanggal</th>
@@ -366,66 +354,26 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($antreanList as $item)
-                    <tr class="searchable-row">
-                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d/m/Y') }}</td>
-                        <td>{{ $item->judul_berita }}</td>
-                        <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
-                        <td>
-                            @if($item->status == 'In Review')
-                                <span class="badge badge-review">In Review</span>
-                            @elseif($item->status == 'In Progress')
-                                <span class="badge badge-progress">In Progress</span>
-                            @elseif($item->status == 'Publish')
-                                <span class="badge badge-publish">Publish</span>
-                            @else
-                                <span class="badge badge-rejected">Rejected</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($item->link_publikasi)
-                                <a href="{{ $item->link_publikasi }}" target="_blank" style="color: #0066cc; text-decoration: none; font-weight: 500;">Link</a>
-                            @else
-                                <a href="{{ route('admin.pengajuan.show', $item->id) }}" style="color: #0066cc; text-decoration: none; font-weight: 500;">Detail</a>
-                            @endif
-                        </td>
+                @forelse($antreanList as $antrean)
+                    <tr>
+                        <td>{{ \Carbon\Carbon::parse($antrean->tanggal_mulai)->format('d/m/Y') }}</td>
+                        <td>{{ $antrean->judul_berita }}</td>
+                        <td>{{ $antrean->kategori->nama_kategori ?? '-' }}</td>
+                        <td><span class="badge badge-review">{{ $antrean->status }}</span></td>
+                        <td><a href="{{ route('admin.pengajuan.show', $antrean->id) }}" style="color: #0066cc; font-weight: 500;">Detail</a></td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" style="text-align: center;">Belum ada antrean pengajuan berita terbaru.</td>
+                        <td colspan="5" style="text-align: center;">Tidak ada antrean pengajuan yang sedang menunggu review.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
 
         <div class="pagination">
-            <button class="page-btn">Previous</button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">Next</button>
+            @if(isset($antreanList) && method_exists($antreanList, 'links'))
+                {{ $antreanList->links() }}
+            @endif
         </div>
     </div>
-
-    <!-- SCRIPT JAVASCRIPT UNTUK FITUR PENCARIAN (SEARCH) -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const searchInput = document.getElementById("searchInput");
-            const table = document.getElementById("tabelAntrean");
-            const rows = table.getElementsByClassName("searchable-row");
-
-            searchInput.addEventListener("keyup", function () {
-                const filter = searchInput.value.toLowerCase().trim();
-
-                for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i];
-                    const textContent = row.textContent || row.innerText;
-
-                    if (textContent.toLowerCase().indexOf(filter) > -1) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
-                }
-            });
-        });
-    </script>
 @endsection

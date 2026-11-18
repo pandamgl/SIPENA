@@ -19,109 +19,6 @@
             min-height: 100vh;
         }
 
-        /* --- SIDEBAR KIRI --- */
-        .sidebar {
-            width: 260px;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            padding-top: 40px;
-        }
-
-        .profile-section {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .profile-circle {
-            width: 120px;
-            height: 120px;
-            background-color: #e0e0e0;
-            border-radius: 50%;
-            margin: 0 auto 15px auto;
-        }
-
-        .profile-name {
-            font-size: 16px;
-            color: #1a1a1a;
-            font-weight: 500;
-        }
-
-        .menu-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .menu-item {
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-            color: #333;
-            font-size: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .menu-item i {
-            font-size: 18px;
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Status Menu Aktif (Warna Pink/Merah Muda) */
-        .menu-item.active {
-            background-color: #ffcdd2;
-            color: #1a1a1a;
-            border-top-right-radius: 25px;
-            border-bottom-right-radius: 25px;
-            margin-right: 10px;
-        }
-
-        .menu-item:hover:not(.active) {
-            background-color: #f5f5f5;
-            border-top-right-radius: 25px;
-            border-bottom-right-radius: 25px;
-            margin-right: 10px;
-        }
-
-        /* --- KANVAS UTAMA KANAN --- */
-        .main-content {
-            flex: 1;
-            padding: 30px 40px;
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .bell-icon {
-            font-size: 24px;
-            color: #333;
-            cursor: pointer;
-        }
-
-        .user-dropdown {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: #e0e0e0;
-            padding: 8px 15px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
         /* Banner Merah Utama */
         .banner-card {
             background-color: #e51b24;
@@ -152,6 +49,71 @@
             background-size: cover;
             background-position: center;
         }
+
+        /* Notifikasi Alert Banner */
+        .notif-alert-banner {
+            background-color: #fff9e6;
+            border: 1px solid #ffeaa7;
+            border-left: 5px solid #f39c12;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .notif-alert-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .notif-alert-icon {
+            font-size: 24px;
+            color: #f39c12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notif-alert-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .btn-check-monitoring {
+            background-color: #e51b24;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .btn-check-monitoring:hover {
+            background-color: #c9151d;
+        }
+
+        .badge-status {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            display: inline-block;
+        }
+
+        .badge-review { background-color: #f39c12; }
+        .badge-progress { background-color: #3498db; }
+        .badge-publish { background-color: #2ecc71; }
+        .badge-rejected { background-color: #e74c3c; }
 
         /* Grid Kartu Statistik Bawah */
         .stats-grid {
@@ -215,41 +177,67 @@
 @endpush
 
 @section('content')
-    <!-- Banner Merah Logo & Gedung -->
-    <div class="banner-card">
-        <div class="banner-text">
-            <h1>Logo</h1>
-        </div>
-        <div class="banner-image"></div>
-    </div>
-
-    <!-- Kartu Statistik & Dokumen -->
-    <div class="stats-grid">
-        <!-- Kartu 1: Pengajuan (Dinamis dari Database) -->
-        <div class="stat-card card-red">
-            <div class="stat-info">
-                <h2>{{ $totalPengajuan ?? 0 }}</h2>
-                <p>Pengajuan</p>
+    <div style="padding: 10px 40px 40px 40px;">
+        <!-- Banner Merah Logo & Gedung -->
+        <div class="banner-card">
+            <div class="banner-text">
+                <h1>SIPENA</h1>
             </div>
-            <i class="fa-regular fa-clock"></i>
+            <div class="banner-image"></div>
         </div>
 
-        <!-- Kartu 2: Publikasi Berita (Dinamis dari Database) -->
-        <div class="stat-card card-red">
-            <div class="stat-info">
-                <h2>{{ $totalPublikasi ?? 0 }}</h2>
-                <p>Publikasi Berita</p>
+        <!-- Banner Notifikasi Terakhir Jika Ada Perubahan Status -->
+        @if(isset($latestNotification) && $latestNotification)
+            <div class="notif-alert-banner">
+                <div class="notif-alert-content">
+                    <div class="notif-alert-icon">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div class="notif-alert-text">
+                        <strong>Notifikasi Terbaru:</strong> Status pengajuan berita <em>"{{ $latestNotification->pengajuan->judul_berita ?? 'Pengajuan' }}"</em> 
+                        telah diubah menjadi 
+                        <span class="badge-status @if($latestNotification->status_baru == 'Publish') badge-publish @elseif($latestNotification->status_baru == 'Rejected') badge-rejected @elseif($latestNotification->status_baru == 'In Progress') badge-progress @else badge-review @endif">
+                            {{ $latestNotification->status_baru }}
+                        </span> 
+                        oleh admin.
+                        @if($latestNotification->status_baru == 'Rejected' && $latestNotification->catatan)
+                            <br><span style="color: #c0392b;"><strong>Alasan Penolakan:</strong> {{ $latestNotification->catatan }}</span>
+                        @endif
+                        <br><small style="color: #888;">{{ \Carbon\Carbon::parse($latestNotification->created_at)->diffForHumans() }}</small>
+                    </div>
+                </div>
+                <a href="{{ route('user.monitoring') }}" class="btn-check-monitoring">Lihat Monitoring &rarr;</a>
             </div>
-            <i class="fa-regular fa-paper-plane"></i>
-        </div>
+        @endif
 
-        <!-- Kartu 3: User Guide -->
-        <a href="{{ asset('manual_book.pdf') }}" download class="stat-card card-gray" style="text-decoration: none;">
-            <div class="stat-info">
-                <h2>User Guide</h2>
-                <p>Download</p>
+        <!-- Kartu Statistik & Dokumen -->
+        <div class="stats-grid">
+            <!-- Kartu 1: Antrean Pengajuan (Berubah menjadi 0 jika sudah direview admin) -->
+            <div class="stat-card card-red">
+                <div class="stat-info">
+                    <h2>{{ $antrianCount ?? 0 }}</h2>
+                    <p>Antrean Pengajuan</p>
+                </div>
+                <i class="fa-regular fa-clock"></i>
             </div>
-            <i class="fa-regular fa-file-lines"></i>
-        </a>
+
+            <!-- Kartu 2: Publikasi Berita -->
+            <div class="stat-card card-red">
+                <div class="stat-info">
+                    <h2>{{ $publikasiCount ?? 0 }}</h2>
+                    <p>Publikasi Berita</p>
+                </div>
+                <i class="fa-regular fa-paper-plane"></i>
+            </div>
+
+            <!-- Kartu 3: User Guide -->
+            <a href="{{ asset('manual_book.pdf') }}" download class="stat-card card-gray" style="text-decoration: none;">
+                <div class="stat-info">
+                    <h2>User Guide</h2>
+                    <p>Download</p>
+                </div>
+                <i class="fa-regular fa-file-lines"></i>
+            </a>
+        </div>
     </div>
 @endsection

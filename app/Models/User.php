@@ -25,11 +25,10 @@ class User extends Authenticatable
 
     protected $hidden = [
         'password',
-        'plain_password',
         'remember_token',
     ];
 
-    
+    // Jangan tambahkan 'password' => 'hashed' di sini
     public function prodiUnit()
     {
         return $this->belongsTo(ProdiUnit::class, 'prodi_unit_id');

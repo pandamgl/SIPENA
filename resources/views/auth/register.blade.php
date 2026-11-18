@@ -223,8 +223,12 @@
                 <div class="form-group">
                     <label class="form-label">Email</label>
                     <div class="input-wrapper">
-                        <input type="email" name="email" class="form-input" placeholder="Masukkan email" value="{{ old('email') }}" required>
+                        <input type="email" name="email" id="email" class="form-input" placeholder="contoh: nama@student.telkomuniversity.ac.id" value="{{ old('email') }}" pattern="[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)*telkomuniversity\.ac\.id" title="Khusus email resmi Telkom University (@...telkomuniversity.ac.id)" oninput="this.value = this.value.toLowerCase()" required>
                     </div>
+                    <small id="emailHelp" style="color: #666; font-size: 11px; margin-top: 4px; display: block;">*Khusus email resmi Telkom University (@...telkomuniversity.ac.id)</small>
+                    @error('email')
+                        <small style="color: #e51b24; font-size: 12px; margin-top: 4px; display: block; font-weight: 500;">{{ $message }}</small>
+                    @enderror
                 </div>
 
                 <div class="form-group">
@@ -258,7 +262,7 @@
         </div>
     </div>
 
-    <!-- Script Interaktif untuk Toggle Password Visibility -->
+    <!-- Script Interaktif untuk Toggle Password Visibility & Validasi Email -->
     <script>
         function togglePassword(inputId, icon) {
             const input = document.getElementById(inputId);
@@ -275,6 +279,30 @@
                 icon.classList.add("fa-eye");
                 icon.setAttribute("title", "Tampilkan password");
             }
+        }
+
+        // Validasi Email Real-time
+        const emailInput = document.getElementById('email');
+        const emailHelp = document.getElementById('emailHelp');
+        const telkomDomainRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)*telkomuniversity\.ac\.id$/i;
+
+        if (emailInput) {
+            emailInput.addEventListener('input', function () {
+                const val = this.value.trim();
+                if (val && !telkomDomainRegex.test(val)) {
+                    this.setCustomValidity('Wajib menggunakan email resmi Telkom University (@...telkomuniversity.ac.id)');
+                    if (emailHelp) {
+                        emailHelp.style.color = '#e51b24';
+                        emailHelp.textContent = '❌ Email harus menggunakan domain resmi Telkom University (contoh: @student.telkomuniversity.ac.id)';
+                    }
+                } else {
+                    this.setCustomValidity('');
+                    if (emailHelp) {
+                        emailHelp.style.color = '#666';
+                        emailHelp.textContent = '*Gunakan email resmi Telkom University (@...telkomuniversity.ac.id)';
+                    }
+                }
+            });
         }
     </script>
 </body>
