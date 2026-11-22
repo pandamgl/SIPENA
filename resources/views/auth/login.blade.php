@@ -153,15 +153,17 @@
         }
 
         /* Tombol Log In */
+
         .btn-submit {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background-color: #e51b24;
             color: white;
             border: none;
             border-radius: 6px;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
             cursor: pointer;
             display: flex;
             justify-content: center;
@@ -172,6 +174,24 @@
 
         .btn-submit:hover {
             background-color: #c4151e;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .form-footer a {
+            color: #1a1a1a;
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .form-footer a:hover {
+            color: #e51b24;
         }
     </style>
 </head>
@@ -219,10 +239,15 @@
                 </div>
 
                 <x-recaptcha />
-                
+
                 <button type="submit" class="btn-submit">
                     Log In <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </button>
+
+                <div class="form-footer">
+                    Belum punya akun?
+                    <a href="{{ route('register') }}">Register</a>
+                </div>
             </form>
         </div>
     </div>
