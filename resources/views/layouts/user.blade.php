@@ -10,10 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-<<<<<<< HEAD
-        /* Reset & Font Setup */
-=======
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         * {
             box-sizing: border-box;
             margin: 0;
@@ -22,20 +18,12 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-<<<<<<< HEAD
-            background-color: #ffffff;
-=======
             background-color: #f8f9fa;
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
             color: #333;
             display: flex;
             min-height: 100vh;
         }
 
-<<<<<<< HEAD
-        /* --- SIDEBAR KIRI --- */
-=======
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         .sidebar {
             width: 260px;
             background-color: #ffffff;
@@ -43,10 +31,6 @@
             display: flex;
             flex-direction: column;
             padding-top: 40px;
-<<<<<<< HEAD
-            flex-shrink: 0;
-=======
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         }
 
         .profile-section {
@@ -98,10 +82,7 @@
             border-top-right-radius: 25px;
             border-bottom-right-radius: 25px;
             margin-right: 10px;
-<<<<<<< HEAD
-=======
             font-weight: 500;
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         }
 
         .menu-item:hover:not(.active) {
@@ -111,10 +92,6 @@
             margin-right: 10px;
         }
 
-<<<<<<< HEAD
-        /* --- KANVAS UTAMA KANAN --- */
-=======
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         .main-content {
             flex: 1;
             display: flex;
@@ -134,8 +111,6 @@
             font-size: 24px;
             color: #333;
             cursor: pointer;
-<<<<<<< HEAD
-=======
             transition: color 0.2s;
         }
 
@@ -319,7 +294,6 @@
 
         .notif-footer a:hover {
             text-decoration: underline;
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         }
 
         .user-dropdown {
@@ -384,11 +358,6 @@
     <main class="main-content">
         <!-- Topbar Kanan Atas -->
         <div class="topbar">
-<<<<<<< HEAD
-            <i class="fa-regular fa-bell bell-icon"></i>
-            <div class="user-dropdown">
-                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-=======
             <!-- Dropdown Notifikasi -->
             <div class="notif-wrapper" style="position: relative;">
                 <div class="bell-container" id="bellBtn" title="Notifikasi Status" style="position: relative; cursor: pointer; padding: 5px;">
@@ -452,7 +421,6 @@
 
             <div class="user-dropdown">
                 <form action="{{ route('logout') }}" method="POST" style="margin: 0; display: flex; align-items: center;">
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
                     @csrf
                     <button type="submit" class="logout-btn" title="Logout">
                         <i class="fa-regular fa-circle-user"></i>
@@ -465,12 +433,6 @@
         @yield('content')
     </main>
 
-<<<<<<< HEAD
-    @stack('scripts')
-</body>
-
-</html>
-=======
     <script>
         // Logika Notifikasi Dropdown & Unread Tracking dengan LocalStorage
         document.addEventListener('DOMContentLoaded', function () {
@@ -545,4 +507,3 @@
 </body>
 
 </html>
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0

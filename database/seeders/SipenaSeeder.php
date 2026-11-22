@@ -20,30 +20,13 @@ class SipenaSeeder extends Seeder
         // 2. Kategori Berita
         KategoriBerita::create(['nama_kategori' => 'Riset Dosen']);
         KategoriBerita::create(['nama_kategori' => 'Prestasi Mahasiswa']);
-<<<<<<< HEAD
-        KategoriBerita::create(['nama_kategori' => 'Prestasi Dosen']);
-        KategoriBerita::create(['nama_kategori' => 'Pengmas & Rekognisi']);
-        KategoriBerita::create(['nama_kategori' => 'Penelitian & Inovasi']);
-        KategoriBerita::create(['nama_kategori' => 'Prestasi Lembaga']);
-        KategoriBerita::create(['nama_kategori' => 'Event']);
-        KategoriBerita::create(['nama_kategori' => 'Promosi']);
-        KategoriBerita::create(['nama_kategori' => 'Kerjasama']);
-        KategoriBerita::create(['nama_kategori' => 'Ormawa']);
-        KategoriBerita::create(['nama_kategori' => 'Kunjungan']);
-        KategoriBerita::create(['nama_kategori' => 'Workshop']);
-        KategoriBerita::create(['nama_kategori' => 'Student Activity']);
-=======
         KategoriBerita::create(['nama_kategori' => 'Event Kampus']);
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
 
         // 3. Akun Admin
         User::create([
             'username' => 'admin',
             'password' => Hash::make('password123'),
-<<<<<<< HEAD
-=======
             'plain_password' => 'password123',
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
             'nama_lengkap' => 'Admin Humas',
             'nim_nik' => '19900101',
             'prodi_unit_id' => $prodi3->id,
@@ -54,10 +37,7 @@ class SipenaSeeder extends Seeder
         User::create([
             'username' => '2211102281',
             'password' => Hash::make('password123'),
-<<<<<<< HEAD
-=======
             'plain_password' => 'password123',
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
             'nama_lengkap' => 'AGAM YOGI PRASETYO',
             'nim_nik' => '2211102281',
             'prodi_unit_id' => $prodi1->id,

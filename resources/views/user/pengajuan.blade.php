@@ -204,6 +204,8 @@
             </div>
 
             <!-- Tombol Submit -->
+             <x-recaptcha />
+             
             <button type="submit" class="btn-submit">Kirim</button>
 
         </form>

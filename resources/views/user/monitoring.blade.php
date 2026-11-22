@@ -56,10 +56,7 @@
             outline: none;
             background-color: #f9f9f9;
             font-size: 13px;
-<<<<<<< HEAD
-=======
             cursor: pointer;
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         }
 
         .data-table {
@@ -115,8 +112,6 @@
             background-color: #e74c3c;
         }
 
-<<<<<<< HEAD
-=======
         .btn-lihat-alasan {
             background-color: #fee2e2;
             color: #dc2626;
@@ -166,7 +161,6 @@
             to { opacity: 1; transform: scale(1); }
         }
 
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         .pagination {
             display: flex;
             justify-content: flex-end;
@@ -207,39 +201,24 @@
         <div class="table-controls">
             <div class="entries-control">
                 Shows
-<<<<<<< HEAD
-                <select>
-                    <option>10</option>
-                    <option>25</option>
-                    <option>50</option>
-=======
                 <select id="entriesSelect">
                     <option value="10">10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
                 </select>
                 entries
             </div>
 
             <div class="filters-control">
                 <label>Filter:</label>
-<<<<<<< HEAD
-                <select class="filter-select">
-=======
                 <select class="filter-select" id="filterKategori">
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
                     <option value="">Semua Kategori</option>
                     <option value="Riset Dosen">Riset Dosen</option>
                     <option value="Prestasi Mahasiswa">Prestasi Mahasiswa</option>
                     <option value="Event Kampus">Event Kampus</option>
                 </select>
 
-<<<<<<< HEAD
-                <select class="filter-select">
-=======
                 <select class="filter-select" id="filterStatus">
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
                     <option value="">Semua Status</option>
                     <option value="In Review">In Review</option>
                     <option value="In Progress">In Progress</option>
@@ -254,11 +233,7 @@
         <table class="data-table">
 =======
         <table class="data-table" id="monitoringTable">
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
-            <thead>
-                <tr>
                     <th>Tanggal</th>
-                    <th>Judul Berita</th>
                     <th>Kategori Berita</th>
                     <th>Status</th>
                     <th>Aksi</th>

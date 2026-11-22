@@ -400,15 +400,6 @@
             </div>
 
             <div class="right-controls">
-<<<<<<< HEAD
-                <select class="control-select">
-                    <option value="">Semua Kategori</option>
-                    <option value="Riset Dosen">Riset Dosen</option>
-                    <option value="Event Kampus">Event Kampus</option>
-                </select>
-
-                <select class="control-select">
-=======
                 <select class="control-select" id="filterKategoriAdmin">
                     <option value="">Semua Kategori</option>
                     @isset($kategoriList)
@@ -419,7 +410,6 @@
                 </select>
 
                 <select class="control-select" id="filterStatusAdmin">
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
                     <option value="">Semua Status</option>
                     <option value="In Review">In Review</option>
                     <option value="In Progress">In Progress</option>
@@ -444,43 +434,6 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-<<<<<<< HEAD
-            <tbody>
-                <tr>
-                    <td>S1 Teknik Informatika</td>
-                    <td>12/09/2026</td>
-                    <td><a href="{{ route('admin.pengajuan.show', 1) }}" class="btn-judul">Mahasiswa Ciptakan AI Pendeteksi
-                            Hoaks</a></td>
-                    <td>Riset Dosen</td>
-                    <td>
-                        <select class="status-select">
-                            <option>In Review</option>
-                            <option selected>In Progress</option>
-                            <option>Publish</option>
-                            <option>Rejected</option>
-                        </select>
-                    </td>
-                    <td class="aksi-cell"><a href="{{ route('admin.pengajuan.show', 1) }}" class="action-link">Lihat /
-                            Edit</a></td>
-                </tr>
-                <tr>
-                    <td>S1 Sistem Informasi</td>
-                    <td>11/09/2026</td>
-                    <td><a href="{{ route('admin.pengajuan.show', 2) }}" class="btn-judul">Seminar Technopreneurship
-                            2026</a></td>
-                    <td>Event Kampus</td>
-                    <td>
-                        <select class="status-select">
-                            <option>In Review</option>
-                            <option>In Progress</option>
-                            <option>Publish</option>
-                            <option selected>Rejected</option>
-                        </select>
-                    </td>
-                    <td class="aksi-cell"><a href="{{ route('admin.pengajuan.show', 2) }}" class="action-link">Lihat /
-                            Edit</a></td>
-                </tr>
-=======
             <tbody id="tablePengajuanBody">
                 @forelse($pengajuanList as $item)
                     <tr class="table-row-item" data-kategori="{{ $item->kategori->nama_kategori ?? '' }}" data-status="{{ $item->status }}">
@@ -518,18 +471,11 @@
                         <td colspan="6" style="text-align: center;">Belum ada pengajuan berita masuk.</td>
                     </tr>
                 @endforelse
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
             </tbody>
         </table>
 
         <div class="pagination">
-<<<<<<< HEAD
-            <button class="page-btn">Previous</button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">Next</button>
-=======
             {{ $pengajuanList->links() }}
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         </div>
     </div>
 
@@ -598,10 +544,6 @@
         const statusSelects = document.querySelectorAll('.status-select');
 
         function updateAksiCell(selectElement) {
-<<<<<<< HEAD
-            const tr = selectElement.closest('tr');
-            const aksiCell = tr.querySelector('.aksi-cell');
-=======
             const id = selectElement.getAttribute('data-id');
             const showUrl = selectElement.getAttribute('data-show-url');
             const currentStatus = selectElement.getAttribute('data-current');
@@ -610,32 +552,18 @@
             const aksiCell = document.getElementById('aksi-cell-' + id);
             if (!aksiCell) return;
 
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
             const status = selectElement.value;
 
             if (status === 'Publish') {
                 aksiCell.innerHTML = `
                     <div class="aksi-input-group">
-<<<<<<< HEAD
-                        <input type="url" placeholder="Masukkan Link Drive" title="Link Drive">
-                        <button class="btn-save-aksi" title="Simpan"><i class="fa-solid fa-check"></i></button>
-=======
                         <input type="url" name="link_publikasi" value="${currentLink}" placeholder="Masukkan Link Publikasi" title="Link Publikasi" form="form-status-${id}" required>
                         <button type="submit" form="form-status-${id}" class="btn-save-aksi" title="Simpan Publish"><i class="fa-solid fa-check"></i></button>
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
                     </div>
                 `;
             } else if (status === 'Rejected') {
                 aksiCell.innerHTML = `
                     <div class="aksi-input-group">
-<<<<<<< HEAD
-                        <input type="text" placeholder="Masukkan Alasan" title="Alasan Penolakan">
-                        <button class="btn-save-aksi" title="Simpan"><i class="fa-solid fa-check"></i></button>
-                    </div>
-                `;
-            } else {
-                aksiCell.innerHTML = '<a href="{{ route("admin.pengajuan.show", 1) }}" class="action-link">Lihat / Edit</a>';
-=======
                         <input type="text" name="catatan" value="${currentAlasan}" placeholder="Masukkan Alasan Penolakan" title="Alasan Penolakan" form="form-status-${id}" required>
                         <button type="submit" form="form-status-${id}" class="btn-save-aksi" title="Simpan Penolakan"><i class="fa-solid fa-check"></i></button>
                     </div>
@@ -649,7 +577,6 @@
                 `;
             } else {
                 aksiCell.innerHTML = `<a href="${showUrl}" class="action-link">Lihat / Edit</a>`;
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
             }
         }
 
@@ -659,8 +586,6 @@
             });
             updateAksiCell(select);
         });
-<<<<<<< HEAD
-=======
 
         // Filter tabel admin berdasarkan kategori dan status
         const filterKategoriAdmin = document.getElementById('filterKategoriAdmin');
@@ -688,6 +613,5 @@
 
         if (filterKategoriAdmin) filterKategoriAdmin.addEventListener('change', filterAdminTable);
         if (filterStatusAdmin) filterStatusAdmin.addEventListener('change', filterAdminTable);
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
     </script>
 @endpush

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\ProdiUnit;
+use App\Rules\RecaptchaV2;
 
 class AuthController extends Controller
 {
@@ -22,6 +23,16 @@ class AuthController extends Controller
         $request->validate([
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
+            'g-recaptcha-response' => [
+                'required',
+                'string',
+                'max:4096',
+                new RecaptchaV2(),
+            ],
+        ], [
+            // Pesan error validasi
+            'g-recaptcha-response.required' =>
+                'Silakan centang verifikasi reCAPTCHA.',
         ]);
 
         $loginType = filter_var($request->input('username'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
@@ -93,16 +104,24 @@ class AuthController extends Controller
             'prodi_unit_id' => ['required', 'exists:prodi_unit,id'],
             'username' => ['required', 'string', 'max:50', 'unique:users,username'],
             'email' => [
-                'required', 
-                'string', 
-                'email', 
-                'max:255', 
+                'required',
+                'string',
+                'email',
+                'max:255',
                 'unique:users,email',
                 'regex:/^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)*telkomuniversity\.ac\.id$/i'
             ],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'g-recaptcha-response' => [
+                'required',
+                'string',
+                'max:4096',
+                new RecaptchaV2(),
+            ],
         ], [
-            'email.regex' => 'Email harus menggunakan domain resmi Telkom University (@...telkomuniversity.ac.id).'
+            'email.regex' => 'Email harus menggunakan domain resmi Telkom University (@...telkomuniversity.ac.id).',
+            'g-recaptcha-response.required' =>
+                'Silakan centang verifikasi reCAPTCHA.',
         ]);
 
         User::create([

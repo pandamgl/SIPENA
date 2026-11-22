@@ -8,6 +8,7 @@ use App\Models\ProdiUnit;
 use App\Models\LogAksiAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Rules\RecaptchaV2;
 
 class PengajuanBeritaController extends Controller
 {
@@ -49,6 +50,12 @@ class PengajuanBeritaController extends Controller
             'narasi_berita' => 'required|string',
             'link_dokumentasi' => 'required|url',
             'kontak_person' => 'required|string|max:15',
+            'g-recaptcha-response' => [
+                'required',
+                'string',
+                'max:4096',
+                new RecaptchaV2(),
+            ],
         ]);
 
         PengajuanBerita::create([

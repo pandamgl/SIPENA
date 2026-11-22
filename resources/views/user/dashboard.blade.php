@@ -19,112 +19,6 @@
             min-height: 100vh;
         }
 
-<<<<<<< HEAD
-        /* --- SIDEBAR KIRI --- */
-        .sidebar {
-            width: 260px;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            padding-top: 40px;
-        }
-
-        .profile-section {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .profile-circle {
-            width: 120px;
-            height: 120px;
-            background-color: #e0e0e0;
-            border-radius: 50%;
-            margin: 0 auto 15px auto;
-        }
-
-        .profile-name {
-            font-size: 16px;
-            color: #1a1a1a;
-            font-weight: 500;
-        }
-
-        .menu-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .menu-item {
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-decoration: none;
-            color: #333;
-            font-size: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .menu-item i {
-            font-size: 18px;
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Status Menu Aktif (Warna Pink/Merah Muda) */
-        .menu-item.active {
-            background-color: #ffcdd2;
-            color: #1a1a1a;
-            border-top-right-radius: 25px;
-            border-bottom-right-radius: 25px;
-            margin-right: 10px;
-        }
-
-        .menu-item:hover:not(.active) {
-            background-color: #f5f5f5;
-            border-top-right-radius: 25px;
-            border-bottom-right-radius: 25px;
-            margin-right: 10px;
-        }
-
-        /* --- KANVAS UTAMA KANAN --- */
-        .main-content {
-            flex: 1;
-            padding: 30px 40px;
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .topbar {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .bell-icon {
-            font-size: 24px;
-            color: #333;
-            cursor: pointer;
-        }
-
-        .user-dropdown {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: #e0e0e0;
-            padding: 8px 15px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-=======
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         /* Banner Merah Utama */
         .banner-card {
             background-color: #e51b24;
@@ -156,8 +50,6 @@
             background-position: center;
         }
 
-<<<<<<< HEAD
-=======
         /* Notifikasi Alert Banner */
         .notif-alert-banner {
             background-color: #fff9e6;
@@ -223,7 +115,6 @@
         .badge-publish { background-color: #2ecc71; }
         .badge-rejected { background-color: #e74c3c; }
 
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         /* Grid Kartu Statistik Bawah */
         .stats-grid {
             display: grid;
@@ -286,46 +177,6 @@
 @endpush
 
 @section('content')
-<<<<<<< HEAD
-    <!-- Banner Merah Logo & Gedung -->
-    <div class="banner-card">
-        <div class="banner-text">
-            <h1>Logo</h1>
-        </div>
-        <div class="banner-image"></div>
-    </div>
-
-    <!-- Kartu Statistik & Dokumen -->
-    <div class="stats-grid">
-        <!-- Kartu 1: Pengajuan -->
-        <div class="stat-card card-red">
-            <div class="stat-info">
-                <h2>2</h2>
-                <p>Pengajuan</p>
-            </div>
-            <i class="fa-regular fa-clock"></i>
-        </div>
-
-        <!-- Kartu 2: Publikasi Berita -->
-        <div class="stat-card card-red">
-            <div class="stat-info">
-                <h2>8</h2>
-                <p>Publikasi Berita</p>
-            </div>
-            <i class="fa-regular fa-paper-plane"></i>
-        </div>
-
-        <!-- Kartu 3: User Guide -->
-        <a href="{{ asset('manual_book.pdf') }}" download class="stat-card card-gray" style="text-decoration: none;">
-            <div class="stat-info">
-                <h2>User Guide</h2>
-                <p>Download</p>
-            </div>
-            <i class="fa-regular fa-file-lines"></i>
-        </a>
-    </div>
-@endsection
-=======
     <div style="padding: 10px 40px 40px 40px;">
         <!-- Banner Merah Logo & Gedung -->
         <div class="banner-card">
@@ -390,4 +241,3 @@
         </div>
     </div>
 @endsection
->>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0

@@ -218,6 +218,8 @@
                     <span class="remember-label">Remember me</span>
                 </div>
 
+                <x-recaptcha />
+                
                 <button type="submit" class="btn-submit">
                     Log In <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </button>

@@ -251,6 +251,8 @@
                     </div>
                 </div>
 
+                <x-recaptcha />
+                
                 <button type="submit" class="btn-submit">
                     Register <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </button>
