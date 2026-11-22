@@ -20,7 +20,17 @@ class SipenaSeeder extends Seeder
         // 2. Kategori Berita
         KategoriBerita::create(['nama_kategori' => 'Riset Dosen']);
         KategoriBerita::create(['nama_kategori' => 'Prestasi Mahasiswa']);
-        KategoriBerita::create(['nama_kategori' => 'Event Kampus']);
+        KategoriBerita::create(['nama_kategori' => 'Prestasi Dosen']);
+        KategoriBerita::create(['nama_kategori' => 'Pengmas & Rekognisi']);
+        KategoriBerita::create(['nama_kategori' => 'Penelitian & Inovasi']);
+        KategoriBerita::create(['nama_kategori' => 'Prestasi Lembaga']);
+        KategoriBerita::create(['nama_kategori' => 'Event']);
+        KategoriBerita::create(['nama_kategori' => 'Promosi']);
+        KategoriBerita::create(['nama_kategori' => 'Kerjasama']);
+        KategoriBerita::create(['nama_kategori' => 'Ormawa']);
+        KategoriBerita::create(['nama_kategori' => 'Kunjungan']);
+        KategoriBerita::create(['nama_kategori' => 'Workshop']);
+        KategoriBerita::create(['nama_kategori' => 'Student Activity']);
 
         // 3. Akun Admin
         User::create([
