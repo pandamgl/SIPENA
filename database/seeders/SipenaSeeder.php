@@ -26,7 +26,6 @@ class SipenaSeeder extends Seeder
         User::create([
             'username' => 'admin',
             'password' => Hash::make('password123'),
-            'plain_password' => 'password123',
             'nama_lengkap' => 'Admin Humas',
             'nim_nik' => '19900101',
             'prodi_unit_id' => $prodi3->id,
@@ -37,7 +36,6 @@ class SipenaSeeder extends Seeder
         User::create([
             'username' => '2211102281',
             'password' => Hash::make('password123'),
-            'plain_password' => 'password123',
             'nama_lengkap' => 'AGAM YOGI PRASETYO',
             'nim_nik' => '2211102281',
             'prodi_unit_id' => $prodi1->id,
