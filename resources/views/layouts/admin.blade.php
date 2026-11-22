@@ -64,6 +64,15 @@
                     <i class="fa-solid fa-chart-pie"></i> Rekapitulasi
                 </a>
             </li>
+<<<<<<< HEAD
+=======
+            <li>
+                <a href="{{ route('admin.users.index') }}"
+                    class="menu-item {{ request()->routeIs('admin.users.*') || request()->routeIs('admin.kategori.*') || request()->routeIs('admin.prodi.*') ? 'active' : '' }}">
+                    <i class="fa-solid fa-users-gear"></i> Manajemen
+                </a>
+            </li>
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         </ul>
     </aside>
 

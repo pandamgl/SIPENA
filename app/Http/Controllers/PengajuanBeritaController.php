@@ -14,7 +14,20 @@ class PengajuanBeritaController extends Controller
     // Dashboard User
     public function userDashboard()
     {
-        return view('user.dashboard');
+        $userId = Auth::id() ?? 1;
+
+        // Count antrean pengajuan: hanya pengajuan user yang masih berstatus 'In Review'
+        // Jika sudah direview oleh admin (In Progress, Publish, atau Rejected), otomatis berkurang / jadi 0
+        $antrianCount = PengajuanBerita::where('user_id', $userId)
+            ->where('status', 'In Review')
+            ->count();
+
+        // Count publikasi berita: pengajuan milik user yang sudah publish
+        $publikasiCount = PengajuanBerita::where('user_id', $userId)
+            ->where('status', 'Publish')
+            ->count();
+
+        return view('user.dashboard', compact('antrianCount', 'publikasiCount'));
     }
 
     // Form Pengajuan Berita (User)
@@ -56,7 +69,7 @@ class PengajuanBeritaController extends Controller
     // Monitoring Status (User)
     public function monitoring()
     {
-        $pengajuan = PengajuanBerita::with('kategori')
+        $pengajuan = PengajuanBerita::with(['kategori', 'logAksi'])
             ->where('user_id', Auth::id() ?? 1)
             ->latest()
             ->paginate(10);
@@ -67,13 +80,22 @@ class PengajuanBeritaController extends Controller
     // Dashboard Admin
     public function adminDashboard()
     {
-        return view('admin.dashboard');
+        $antreanCount = PengajuanBerita::where('status', 'In Review')->count();
+        $publikasiCount = PengajuanBerita::where('status', 'Publish')->count();
+        $masukCount = PengajuanBerita::count();
+
+        $antreanList = PengajuanBerita::with(['user.prodiUnit', 'kategori'])
+            ->where('status', 'In Review')
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.dashboard', compact('antreanCount', 'publikasiCount', 'masukCount', 'antreanList'));
     }
 
     // Kelola Pengajuan (Admin)
     public function index()
     {
-        $pengajuanList = PengajuanBerita::with(['user.prodiUnit', 'kategori'])->latest()->paginate(10);
+        $pengajuanList = PengajuanBerita::with(['user.prodiUnit', 'kategori', 'logAksi'])->latest()->paginate(10);
         $kategoriList = KategoriBerita::all();
         $prodiList = ProdiUnit::all();
 
@@ -83,7 +105,7 @@ class PengajuanBeritaController extends Controller
     // Detail Pengajuan (Admin Read-Only)
     public function show($id)
     {
-        $pengajuan = PengajuanBerita::with(['user.prodiUnit', 'kategori'])->findOrFail($id);
+        $pengajuan = PengajuanBerita::with(['user.prodiUnit', 'kategori', 'logAksi'])->findOrFail($id);
         return view('admin.detail-pengajuan', compact('pengajuan'));
     }
 
@@ -99,11 +121,17 @@ class PengajuanBeritaController extends Controller
         $pengajuan = PengajuanBerita::findOrFail($id);
         $statusSebelumnya = $pengajuan->status;
 
-        $pengajuan->update([
+        $updateData = [
             'status' => $request->status,
-            'link_publikasi' => $request->link_publikasi ?? $pengajuan->link_publikasi,
-        ]);
+        ];
 
+        if ($request->filled('link_publikasi')) {
+            $updateData['link_publikasi'] = $request->link_publikasi;
+        }
+
+        $pengajuan->update($updateData);
+
+        // Catat log perubahan status beserta alasan (catatan)
         LogAksiAdmin::create([
             'pengajuan_id' => $pengajuan->id,
             'admin_id' => Auth::id() ?? 1,

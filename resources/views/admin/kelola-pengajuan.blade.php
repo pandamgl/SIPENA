@@ -400,6 +400,7 @@
             </div>
 
             <div class="right-controls">
+<<<<<<< HEAD
                 <select class="control-select">
                     <option value="">Semua Kategori</option>
                     <option value="Riset Dosen">Riset Dosen</option>
@@ -407,6 +408,18 @@
                 </select>
 
                 <select class="control-select">
+=======
+                <select class="control-select" id="filterKategoriAdmin">
+                    <option value="">Semua Kategori</option>
+                    @isset($kategoriList)
+                        @foreach($kategoriList as $kat)
+                            <option value="{{ $kat->nama_kategori }}">{{ $kat->nama_kategori }}</option>
+                        @endforeach
+                    @endisset
+                </select>
+
+                <select class="control-select" id="filterStatusAdmin">
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
                     <option value="">Semua Status</option>
                     <option value="In Review">In Review</option>
                     <option value="In Progress">In Progress</option>
@@ -431,6 +444,7 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
+<<<<<<< HEAD
             <tbody>
                 <tr>
                     <td>S1 Teknik Informatika</td>
@@ -466,13 +480,56 @@
                     <td class="aksi-cell"><a href="{{ route('admin.pengajuan.show', 2) }}" class="action-link">Lihat /
                             Edit</a></td>
                 </tr>
+=======
+            <tbody id="tablePengajuanBody">
+                @forelse($pengajuanList as $item)
+                    <tr class="table-row-item" data-kategori="{{ $item->kategori->nama_kategori ?? '' }}" data-status="{{ $item->status }}">
+                        <td>{{ $item->user->prodiUnit->nama_prodi_unit ?? '-' }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d/m/Y') }}</td>
+                        <td>
+                            <a href="{{ route('admin.pengajuan.show', $item->id) }}" class="btn-judul">
+                                {{ $item->judul_berita }}
+                            </a>
+                        </td>
+                        <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
+                        <td>
+                            <form id="form-status-{{ $item->id }}" action="{{ route('admin.pengajuan.updateStatus', $item->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <select name="status" class="status-select" 
+                                    data-id="{{ $item->id }}" 
+                                    data-current="{{ $item->status }}" 
+                                    data-show-url="{{ route('admin.pengajuan.show', $item->id) }}" 
+                                    data-link="{{ $item->link_publikasi ?? '' }}" 
+                                    data-alasan="{{ $item->alasan_reject ?? '' }}">
+                                    <option value="In Review" {{ $item->status == 'In Review' ? 'selected' : '' }}>In Review</option>
+                                    <option value="In Progress" {{ $item->status == 'In Progress' ? 'selected' : '' }}>In Progress</option>
+                                    <option value="Publish" {{ $item->status == 'Publish' ? 'selected' : '' }}>Publish</option>
+                                    <option value="Rejected" {{ $item->status == 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                                </select>
+                            </form>
+                        </td>
+                        <td class="aksi-cell" id="aksi-cell-{{ $item->id }}">
+                            <a href="{{ route('admin.pengajuan.show', $item->id) }}" class="action-link">Lihat / Edit</a>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" style="text-align: center;">Belum ada pengajuan berita masuk.</td>
+                    </tr>
+                @endforelse
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
             </tbody>
         </table>
 
         <div class="pagination">
+<<<<<<< HEAD
             <button class="page-btn">Previous</button>
             <button class="page-btn active">1</button>
             <button class="page-btn">Next</button>
+=======
+            {{ $pengajuanList->links() }}
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         </div>
     </div>
 
@@ -541,26 +598,58 @@
         const statusSelects = document.querySelectorAll('.status-select');
 
         function updateAksiCell(selectElement) {
+<<<<<<< HEAD
             const tr = selectElement.closest('tr');
             const aksiCell = tr.querySelector('.aksi-cell');
+=======
+            const id = selectElement.getAttribute('data-id');
+            const showUrl = selectElement.getAttribute('data-show-url');
+            const currentStatus = selectElement.getAttribute('data-current');
+            const currentLink = selectElement.getAttribute('data-link') || '';
+            const currentAlasan = selectElement.getAttribute('data-alasan') || '';
+            const aksiCell = document.getElementById('aksi-cell-' + id);
+            if (!aksiCell) return;
+
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
             const status = selectElement.value;
 
             if (status === 'Publish') {
                 aksiCell.innerHTML = `
                     <div class="aksi-input-group">
+<<<<<<< HEAD
                         <input type="url" placeholder="Masukkan Link Drive" title="Link Drive">
                         <button class="btn-save-aksi" title="Simpan"><i class="fa-solid fa-check"></i></button>
+=======
+                        <input type="url" name="link_publikasi" value="${currentLink}" placeholder="Masukkan Link Publikasi" title="Link Publikasi" form="form-status-${id}" required>
+                        <button type="submit" form="form-status-${id}" class="btn-save-aksi" title="Simpan Publish"><i class="fa-solid fa-check"></i></button>
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
                     </div>
                 `;
             } else if (status === 'Rejected') {
                 aksiCell.innerHTML = `
                     <div class="aksi-input-group">
+<<<<<<< HEAD
                         <input type="text" placeholder="Masukkan Alasan" title="Alasan Penolakan">
                         <button class="btn-save-aksi" title="Simpan"><i class="fa-solid fa-check"></i></button>
                     </div>
                 `;
             } else {
                 aksiCell.innerHTML = '<a href="{{ route("admin.pengajuan.show", 1) }}" class="action-link">Lihat / Edit</a>';
+=======
+                        <input type="text" name="catatan" value="${currentAlasan}" placeholder="Masukkan Alasan Penolakan" title="Alasan Penolakan" form="form-status-${id}" required>
+                        <button type="submit" form="form-status-${id}" class="btn-save-aksi" title="Simpan Penolakan"><i class="fa-solid fa-check"></i></button>
+                    </div>
+                `;
+            } else if (status !== currentStatus) {
+                aksiCell.innerHTML = `
+                    <div class="aksi-input-group" style="align-items: center;">
+                        <span style="font-size: 11px; color: #555;">Simpan?</span>
+                        <button type="submit" form="form-status-${id}" class="btn-save-aksi" title="Simpan Status"><i class="fa-solid fa-check"></i></button>
+                    </div>
+                `;
+            } else {
+                aksiCell.innerHTML = `<a href="${showUrl}" class="action-link">Lihat / Edit</a>`;
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
             }
         }
 
@@ -570,5 +659,35 @@
             });
             updateAksiCell(select);
         });
+<<<<<<< HEAD
+=======
+
+        // Filter tabel admin berdasarkan kategori dan status
+        const filterKategoriAdmin = document.getElementById('filterKategoriAdmin');
+        const filterStatusAdmin = document.getElementById('filterStatusAdmin');
+        const tableRowsAdmin = document.querySelectorAll('.table-row-item');
+
+        function filterAdminTable() {
+            const selectedKat = (filterKategoriAdmin ? filterKategoriAdmin.value : '').toLowerCase();
+            const selectedStatus = (filterStatusAdmin ? filterStatusAdmin.value : '').toLowerCase();
+
+            tableRowsAdmin.forEach(row => {
+                const rowKat = (row.getAttribute('data-kategori') || '').toLowerCase();
+                const rowStatus = (row.getAttribute('data-status') || '').toLowerCase();
+
+                const matchKat = !selectedKat || rowKat.includes(selectedKat);
+                const matchStatus = !selectedStatus || rowStatus === selectedStatus;
+
+                if (matchKat && matchStatus) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        if (filterKategoriAdmin) filterKategoriAdmin.addEventListener('change', filterAdminTable);
+        if (filterStatusAdmin) filterStatusAdmin.addEventListener('change', filterAdminTable);
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
     </script>
 @endpush

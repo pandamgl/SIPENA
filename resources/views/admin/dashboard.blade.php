@@ -303,21 +303,33 @@
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-info">
+<<<<<<< HEAD
                 <h2>5</h2>
+=======
+                <h2>{{ $antreanCount ?? 0 }}</h2>
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
                 <p>Antrean Pengajuan</p>
             </div>
             <i class="fa-regular fa-clock"></i>
         </div>
         <div class="stat-card">
             <div class="stat-info">
+<<<<<<< HEAD
                 <h2>25</h2>
+=======
+                <h2>{{ $publikasiCount ?? 0 }}</h2>
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
                 <p>Publikasi Berita</p>
             </div>
             <i class="fa-regular fa-paper-plane"></i>
         </div>
         <div class="stat-card">
             <div class="stat-info">
+<<<<<<< HEAD
                 <h2>35</h2>
+=======
+                <h2>{{ $masukCount ?? 0 }}</h2>
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
                 <p>Pengajuan Masuk</p>
             </div>
             <i class="fa-solid fa-inbox"></i>
@@ -354,6 +366,7 @@
                 </tr>
             </thead>
             <tbody>
+<<<<<<< HEAD
                 <tr>
                     <td>dd/mm/yyyy</td>
                     <td>XXXXXXXXXXXXXXXXXX</td>
@@ -368,13 +381,34 @@
                     <td><span class="badge badge-progress">In Progress</span></td>
                     <td>-</td>
                 </tr>
+=======
+                @forelse($antreanList as $antrean)
+                    <tr>
+                        <td>{{ \Carbon\Carbon::parse($antrean->tanggal_mulai)->format('d/m/Y') }}</td>
+                        <td>{{ $antrean->judul_berita }}</td>
+                        <td>{{ $antrean->kategori->nama_kategori ?? '-' }}</td>
+                        <td><span class="badge badge-review">{{ $antrean->status }}</span></td>
+                        <td><a href="{{ route('admin.pengajuan.show', $antrean->id) }}" style="color: #0066cc; font-weight: 500;">Detail</a></td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Tidak ada antrean pengajuan yang sedang menunggu review.</td>
+                    </tr>
+                @endforelse
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
             </tbody>
         </table>
 
         <div class="pagination">
+<<<<<<< HEAD
             <button class="page-btn">Previous</button>
             <button class="page-btn active">1</button>
             <button class="page-btn">Next</button>
+=======
+            @if(isset($antreanList) && method_exists($antreanList, 'links'))
+                {{ $antreanList->links() }}
+            @endif
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         </div>
     </div>
 @endsection

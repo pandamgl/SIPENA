@@ -4,34 +4,69 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\ProdiUnit;
 
 class AuthController extends Controller
 {
-    //Menampilkan Form Login
+    // Menampilkan Form Login
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    //Login
+    // Login
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
 
+        $loginType = filter_var($request->input('username'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $credentials = [
+            $loginType => $request->input('username'),
+            'password' => $request->input('password'),
+        ];
+
         $remember = $request->has('remember');
 
-        if (Auth::attempt($credentials, $remember)) {
-            $request->session()->regenerate();
+        try {
+            if (Auth::attempt($credentials, $remember)) {
+                $request->session()->regenerate();
 
-            //Dashboard sesuai role user
-            if (Auth::user()->role === 'admin') {
-                return redirect()->intended(route('admin.dashboard'));
+                // Dashboard sesuai role user
+                if (Auth::user()->role === 'admin') {
+                    return redirect()->intended(route('admin.dashboard'));
+                }
+
+                return redirect()->intended(route('user.dashboard'));
+            }
+        } catch (\RuntimeException $e) {
+            // Tangani jika ada data di database yang diisi password polos / belum di-hash dengan Bcrypt
+            $user = User::where($loginType, $request->input('username'))->first();
+            if ($user && ($user->password === $request->input('password') || (isset($user->plain_password) && $user->plain_password === $request->input('password')))) {
+                $user->password = Hash::make($request->input('password'));
+                if (isset($user->plain_password)) {
+                    $user->plain_password = $request->input('password');
+                }
+                $user->save();
+
+                Auth::login($user, $remember);
+                $request->session()->regenerate();
+
+                if ($user->role === 'admin') {
+                    return redirect()->intended(route('admin.dashboard'));
+                }
+
+                return redirect()->intended(route('user.dashboard'));
             }
 
-            return redirect()->intended(route('user.dashboard'));
+            return back()->withErrors([
+                'username' => 'Format password di database tidak valid. Pastikan password telah di-hash dengan Bcrypt.',
+            ])->onlyInput('username');
         }
 
         return back()->withErrors([
@@ -39,7 +74,52 @@ class AuthController extends Controller
         ])->onlyInput('username');
     }
 
-    //Logout
+    // Menampilkan Form Register
+    public function showRegister()
+    {
+        $prodiList = ProdiUnit::all();
+        return view('auth.register', compact('prodiList'));
+    }
+
+    // Proses Register
+    public function register(Request $request)
+    {
+        // Normalisasi format email menjadi lowercase
+        $request->merge(['email' => strtolower(trim($request->email))]);
+
+        $request->validate([
+            'nama' => ['required', 'string', 'max:100'],
+            'nim_nik' => ['required', 'string', 'max:30'],
+            'prodi_unit_id' => ['required', 'exists:prodi_unit,id'],
+            'username' => ['required', 'string', 'max:50', 'unique:users,username'],
+            'email' => [
+                'required', 
+                'string', 
+                'email', 
+                'max:255', 
+                'unique:users,email',
+                'regex:/^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)*telkomuniversity\.ac\.id$/i'
+            ],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ], [
+            'email.regex' => 'Email harus menggunakan domain resmi Telkom University (@...telkomuniversity.ac.id).'
+        ]);
+
+        User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'plain_password' => $request->password,
+            'nama_lengkap' => $request->nama,
+            'nim_nik' => $request->nim_nik,
+            'prodi_unit_id' => $request->prodi_unit_id,
+            'role' => 'pengaju', // Default role untuk pendaftar baru
+        ]);
+
+        return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
+    }
+
+    // Logout
     public function logout(Request $request)
     {
         Auth::logout();

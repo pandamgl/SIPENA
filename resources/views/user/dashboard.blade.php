@@ -19,6 +19,7 @@
             min-height: 100vh;
         }
 
+<<<<<<< HEAD
         /* --- SIDEBAR KIRI --- */
         .sidebar {
             width: 260px;
@@ -122,6 +123,8 @@
             font-size: 18px;
         }
 
+=======
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         /* Banner Merah Utama */
         .banner-card {
             background-color: #e51b24;
@@ -153,6 +156,74 @@
             background-position: center;
         }
 
+<<<<<<< HEAD
+=======
+        /* Notifikasi Alert Banner */
+        .notif-alert-banner {
+            background-color: #fff9e6;
+            border: 1px solid #ffeaa7;
+            border-left: 5px solid #f39c12;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .notif-alert-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .notif-alert-icon {
+            font-size: 24px;
+            color: #f39c12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notif-alert-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .btn-check-monitoring {
+            background-color: #e51b24;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .btn-check-monitoring:hover {
+            background-color: #c9151d;
+        }
+
+        .badge-status {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            display: inline-block;
+        }
+
+        .badge-review { background-color: #f39c12; }
+        .badge-progress { background-color: #3498db; }
+        .badge-publish { background-color: #2ecc71; }
+        .badge-rejected { background-color: #e74c3c; }
+
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
         /* Grid Kartu Statistik Bawah */
         .stats-grid {
             display: grid;
@@ -215,6 +286,7 @@
 @endpush
 
 @section('content')
+<<<<<<< HEAD
     <!-- Banner Merah Logo & Gedung -->
     <div class="banner-card">
         <div class="banner-text">
@@ -253,3 +325,69 @@
         </a>
     </div>
 @endsection
+=======
+    <div style="padding: 10px 40px 40px 40px;">
+        <!-- Banner Merah Logo & Gedung -->
+        <div class="banner-card">
+            <div class="banner-text">
+                <h1>SIPENA</h1>
+            </div>
+            <div class="banner-image"></div>
+        </div>
+
+        <!-- Banner Notifikasi Terakhir Jika Ada Perubahan Status -->
+        @if(isset($latestNotification) && $latestNotification)
+            <div class="notif-alert-banner">
+                <div class="notif-alert-content">
+                    <div class="notif-alert-icon">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div class="notif-alert-text">
+                        <strong>Notifikasi Terbaru:</strong> Status pengajuan berita <em>"{{ $latestNotification->pengajuan->judul_berita ?? 'Pengajuan' }}"</em> 
+                        telah diubah menjadi 
+                        <span class="badge-status @if($latestNotification->status_baru == 'Publish') badge-publish @elseif($latestNotification->status_baru == 'Rejected') badge-rejected @elseif($latestNotification->status_baru == 'In Progress') badge-progress @else badge-review @endif">
+                            {{ $latestNotification->status_baru }}
+                        </span> 
+                        oleh admin.
+                        @if($latestNotification->status_baru == 'Rejected' && $latestNotification->catatan)
+                            <br><span style="color: #c0392b;"><strong>Alasan Penolakan:</strong> {{ $latestNotification->catatan }}</span>
+                        @endif
+                        <br><small style="color: #888;">{{ \Carbon\Carbon::parse($latestNotification->created_at)->diffForHumans() }}</small>
+                    </div>
+                </div>
+                <a href="{{ route('user.monitoring') }}" class="btn-check-monitoring">Lihat Monitoring &rarr;</a>
+            </div>
+        @endif
+
+        <!-- Kartu Statistik & Dokumen -->
+        <div class="stats-grid">
+            <!-- Kartu 1: Antrean Pengajuan (Berubah menjadi 0 jika sudah direview admin) -->
+            <div class="stat-card card-red">
+                <div class="stat-info">
+                    <h2>{{ $antrianCount ?? 0 }}</h2>
+                    <p>Antrean Pengajuan</p>
+                </div>
+                <i class="fa-regular fa-clock"></i>
+            </div>
+
+            <!-- Kartu 2: Publikasi Berita -->
+            <div class="stat-card card-red">
+                <div class="stat-info">
+                    <h2>{{ $publikasiCount ?? 0 }}</h2>
+                    <p>Publikasi Berita</p>
+                </div>
+                <i class="fa-regular fa-paper-plane"></i>
+            </div>
+
+            <!-- Kartu 3: User Guide -->
+            <a href="{{ asset('manual_book.pdf') }}" download class="stat-card card-gray" style="text-decoration: none;">
+                <div class="stat-info">
+                    <h2>User Guide</h2>
+                    <p>Download</p>
+                </div>
+                <i class="fa-regular fa-file-lines"></i>
+            </a>
+        </div>
+    </div>
+@endsection
+>>>>>>> f2fdcd59f9033ff6ce48fabe332a3e780814c4b0
