@@ -411,6 +411,16 @@
 
         <!-- Area Tabel Putih -->
         <div class="table-panel">
+            @if(session('success'))
+                <div style="background-color: #d1fae5; color: #065f46; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if($errors->any())
+                <div style="background-color: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
+                    {{ $errors->first() }}
+                </div>
+            @endif
 
             <!-- Kontrol Tabel (Search & Tombol Tambah) -->
             <div class="table-controls">
@@ -438,11 +448,21 @@
                         <tr class="searchable-row">
                             <td>{{ $user->nama_lengkap }}</td>
                             <td>{{ $user->nim_nik }}</td>
-                            <td><a href="mailto:{{ $user->email }}" class="email-link">{{ $user->email }}</a></td>
+                            <td>
+                                @if(!empty($user->email))
+                                    <a href="mailto:{{ $user->email }}" class="email-link">{{ $user->email }}</a>
+                                @else
+                                    <span style="color: #888;">-</span>
+                                @endif
+                            </td>
                             <td>
                                 <!-- Fitur Lihat/Sembunyikan Password -->
-                                <span id="pass-{{ $user->id }}" data-password="{{ $user->plain_password ?? $user->password }}">••••••••</span>
-                                <i class="fa-solid fa-eye toggle-password" data-id="{{ $user->id }}" style="cursor: pointer; margin-left: 8px; color: #666;" title="Lihat Password"></i>
+                                @if(!empty($user->plain_password))
+                                    <span id="pass-{{ $user->id }}" data-password="{{ $user->plain_password }}">••••••••</span>
+                                    <i class="fa-solid fa-eye toggle-password" data-id="{{ $user->id }}" style="cursor: pointer; margin-left: 8px; color: #666;" title="Lihat Password"></i>
+                                @else
+                                    <span style="color: #888; font-style: italic;">Terenkripsi</span>
+                                @endif
                             </td>
                             <td>{{ $user->prodiUnit->nama_prodi_unit ?? '-' }}</td>
                             <td>

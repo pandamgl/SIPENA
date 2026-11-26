@@ -25,7 +25,9 @@ class SipenaSeeder extends Seeder
         // 3. Akun Admin
         User::create([
             'username' => 'admin',
+            'email' => 'admin@telkomuniversity.ac.id',
             'password' => Hash::make('password123'),
+            'plain_password' => 'password123',
             'nama_lengkap' => 'Admin Humas',
             'nim_nik' => '19900101',
             'prodi_unit_id' => $prodi3->id,
@@ -35,7 +37,9 @@ class SipenaSeeder extends Seeder
         // 4. Akun User (Pengaju)
         User::create([
             'username' => '2211102281',
+            'email' => '2211102281@student.telkomuniversity.ac.id',
             'password' => Hash::make('password123'),
+            'plain_password' => 'password123',
             'nama_lengkap' => 'AGAM YOGI PRASETYO',
             'nim_nik' => '2211102281',
             'prodi_unit_id' => $prodi1->id,

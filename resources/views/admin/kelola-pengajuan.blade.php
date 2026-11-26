@@ -386,6 +386,17 @@
 
     <!-- Area Tabel Putih -->
     <div class="table-panel">
+        @if(session('success'))
+            <div style="background-color: #d1fae5; color: #065f46; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if($errors->any())
+            <div style="background-color: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
         <h3 class="panel-title">Rentang Waktu</h3>
 
         <div class="table-controls-top">
@@ -557,14 +568,14 @@
             if (status === 'Publish') {
                 aksiCell.innerHTML = `
                     <div class="aksi-input-group">
-                        <input type="url" name="link_publikasi" value="${currentLink}" placeholder="Masukkan Link Publikasi" title="Link Publikasi" form="form-status-${id}" required>
+                        <input type="url" name="link_publikasi" value="${currentLink}" placeholder="https://... (lalu klik ✓)" title="Link Publikasi" form="form-status-${id}" required>
                         <button type="submit" form="form-status-${id}" class="btn-save-aksi" title="Simpan Publish"><i class="fa-solid fa-check"></i></button>
                     </div>
                 `;
             } else if (status === 'Rejected') {
                 aksiCell.innerHTML = `
                     <div class="aksi-input-group">
-                        <input type="text" name="catatan" value="${currentAlasan}" placeholder="Masukkan Alasan Penolakan" title="Alasan Penolakan" form="form-status-${id}" required>
+                        <input type="text" name="catatan" value="${currentAlasan}" placeholder="Alasan penolakan (lalu klik ✓)" title="Alasan Penolakan" form="form-status-${id}" required>
                         <button type="submit" form="form-status-${id}" class="btn-save-aksi" title="Simpan Penolakan"><i class="fa-solid fa-check"></i></button>
                     </div>
                 `;

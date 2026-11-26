@@ -259,6 +259,10 @@
             display: inline-block;
         }
 
+        .badge-review {
+            background-color: #f59e0b;
+        }
+
         .badge-progress {
             background-color: #3498db;
         }
@@ -303,21 +307,21 @@
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-info">
-                <h2>{{ $antreanCount ?? 0 }}</h2>
+                <h2 id="statAntreanCount">{{ $antreanCount ?? 0 }}</h2>
                 <p>Antrean Pengajuan</p>
             </div>
             <i class="fa-regular fa-clock"></i>
         </div>
         <div class="stat-card">
             <div class="stat-info">
-                <h2>{{ $publikasiCount ?? 0 }}</h2>
+                <h2 id="statPublikasiCount">{{ $publikasiCount ?? 0 }}</h2>
                 <p>Publikasi Berita</p>
             </div>
             <i class="fa-regular fa-paper-plane"></i>
         </div>
         <div class="stat-card">
             <div class="stat-info">
-                <h2>{{ $masukCount ?? 0 }}</h2>
+                <h2 id="statMasukCount">{{ $masukCount ?? 0 }}</h2>
                 <p>Pengajuan Masuk</p>
             </div>
             <i class="fa-solid fa-inbox"></i>
@@ -331,15 +335,15 @@
         <div class="table-controls">
             <div class="entries-control">
                 Shows
-                <select>
-                    <option>10</option>
-                    <option>25</option>
-                    <option>50</option>
+                <select id="dashboardPerPage">
+                    <option value="10" {{ ($perPage ?? 10) == 10 ? 'selected' : '' }}>10</option>
+                    <option value="25" {{ ($perPage ?? 10) == 25 ? 'selected' : '' }}>25</option>
+                    <option value="50" {{ ($perPage ?? 10) == 50 ? 'selected' : '' }}>50</option>
                 </select>
                 entries
             </div>
             <div class="search-control">
-                Search: <input type="text">
+                Search: <input type="text" id="dashboardSearch" value="{{ $search ?? '' }}" placeholder="Cari judul/kategori...">
             </div>
         </div>
 
@@ -353,7 +357,7 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="dashboardAntreanBody">
                 @forelse($antreanList as $antrean)
                     <tr>
                         <td>{{ \Carbon\Carbon::parse($antrean->tanggal_mulai)->format('d/m/Y') }}</td>
@@ -377,3 +381,85 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        const DASHBOARD_URL = @json(route('admin.dashboard'));
+        const dashboardPerPage = document.getElementById('dashboardPerPage');
+        const dashboardSearch = document.getElementById('dashboardSearch');
+        const dashboardAntreanBody = document.getElementById('dashboardAntreanBody');
+
+        function escapeDashboardHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        let isDashboardFetching = false;
+        async function refreshAdminDashboard() {
+            if (isDashboardFetching) return;
+            isDashboardFetching = true;
+
+            try {
+                const params = new URLSearchParams();
+                if (dashboardPerPage && dashboardPerPage.value) params.set('per_page', dashboardPerPage.value);
+                if (dashboardSearch && dashboardSearch.value.trim()) params.set('search', dashboardSearch.value.trim());
+
+                const url = params.toString() ? `${DASHBOARD_URL}?${params.toString()}` : DASHBOARD_URL;
+                const response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+                if (!response.ok) return;
+
+                const data = await response.json();
+                document.getElementById('statAntreanCount').textContent = data.antreanCount ?? 0;
+                document.getElementById('statPublikasiCount').textContent = data.publikasiCount ?? 0;
+                document.getElementById('statMasukCount').textContent = data.masukCount ?? 0;
+
+                const rows = data.rows || [];
+                if (rows.length === 0) {
+                    dashboardAntreanBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Tidak ada antrean pengajuan yang sedang menunggu review.</td></tr>';
+                } else {
+                    dashboardAntreanBody.innerHTML = rows.map(row => `
+                        <tr>
+                            <td>${escapeDashboardHtml(row.tanggal)}</td>
+                            <td>${escapeDashboardHtml(row.judul_berita)}</td>
+                            <td>${escapeDashboardHtml(row.kategori)}</td>
+                            <td><span class="badge badge-review">${escapeDashboardHtml(row.status)}</span></td>
+                            <td><a href="${escapeDashboardHtml(row.show_url)}" style="color: #0066cc; font-weight: 500;">Detail</a></td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Gagal menyinkronkan beranda:', error);
+            } finally {
+                isDashboardFetching = false;
+            }
+        }
+
+        if (dashboardPerPage) {
+            dashboardPerPage.addEventListener('change', refreshAdminDashboard);
+        }
+
+        let searchTimeout = null;
+        if (dashboardSearch) {
+            dashboardSearch.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(refreshAdminDashboard, 250);
+            });
+        }
+
+        window.addEventListener('pageshow', refreshAdminDashboard);
+        setInterval(() => {
+            if (!document.hidden) {
+                refreshAdminDashboard();
+            }
+        }, 10000);
+    </script>
+@endpush

@@ -12,7 +12,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-color: #f5f5f5;
             color: #333;
             display: flex;
@@ -29,6 +29,7 @@
             flex-shrink: 0;
             border-top-right-radius: 15px;
             border-bottom-right-radius: 15px;
+            z-index: 10;
         }
 
         .profile-section {
@@ -135,23 +136,24 @@
         }
 
         .btn-download-excel {
-            background-color: #ff4d4f;
+            background-color: #e51b24;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 10px 20px;
             border-radius: 8px;
-            font-size: 15px;
+            font-family: inherit;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             transition: background-color 0.3s;
             text-decoration: none;
         }
 
         .btn-download-excel:hover {
-            background-color: #d9363e;
+            background-color: #c4151e;
         }
 
         .table-panel {
@@ -224,6 +226,21 @@
             font-weight: 500;
         }
 
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-judul {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .btn-judul:hover {
+            color: #e51b24;
+        }
+
         .charts-container {
             display: flex;
             gap: 40px;
@@ -263,7 +280,7 @@
     <!-- Header Halaman & Tombol Unduh Laporan -->
     <div class="page-header">
         <h1>Rekapitulasi</h1>
-        <a href="#" class="btn-download-excel">
+        <a href="{{ route('admin.rekapitulasi.export', array_filter($filters)) }}" id="btnDownloadLaporan" class="btn-download-excel">
             <i class="fa-solid fa-file-excel"></i> Unduh Laporan
         </a>
     </div>
@@ -274,20 +291,24 @@
 
         <div class="table-controls-top">
             <div class="time-range-group">
-                <select class="control-select">
-                    <option>Bulanan</option>
-                    <option>Tri-wulan (Q1)</option>
-                    <option>Tri-wulan (Q2)</option>
-                    <option>Tri-wulan (Q3)</option>
-                    <option>Tri-wulan (Q4)</option>
+                <select class="control-select" id="filterPeriode">
+                    <option value="" {{ $filters['periode'] === '' ? 'selected' : '' }}>Semua Periode</option>
+                    <option value="bulanan" {{ $filters['periode'] === 'bulanan' ? 'selected' : '' }}>Bulanan</option>
+                    <option value="q1" {{ $filters['periode'] === 'q1' ? 'selected' : '' }}>Tri-wulan (Q1)</option>
+                    <option value="q2" {{ $filters['periode'] === 'q2' ? 'selected' : '' }}>Tri-wulan (Q2)</option>
+                    <option value="q3" {{ $filters['periode'] === 'q3' ? 'selected' : '' }}>Tri-wulan (Q3)</option>
+                    <option value="q4" {{ $filters['periode'] === 'q4' ? 'selected' : '' }}>Tri-wulan (Q4)</option>
                 </select>
-                <input type="date" class="control-input" title="Tanggal">
+                <input type="date" class="control-input" id="filterTanggal" value="{{ $filters['tanggal'] }}" title="Tanggal">
             </div>
             <div>
-                <select class="control-select">
-                    <option value="">Filter Kategori</option>
-                    <option value="Riset Dosen">Riset Dosen</option>
-                    <option value="Event Kampus">Event Kampus</option>
+                <select class="control-select" id="filterKategori">
+                    <option value="">Semua Kategori</option>
+                    @foreach($kategoriList as $kat)
+                        <option value="{{ $kat->id }}" {{ (string) $filters['kategori_id'] === (string) $kat->id ? 'selected' : '' }}>
+                            {{ $kat->nama_kategori }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
         </div>
@@ -304,23 +325,29 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>S1 Teknik Informatika</td>
-                    <td>dd/mm/yyyy</td>
-                    <td>XXXXXXXXXXXXXXXXXX</td>
-                    <td>Riset Dosen</td>
-                    <td>Publish</td>
-                    <td><a href="#" class="action-link">Link</a></td>
-                </tr>
-                <tr>
-                    <td>S1 Sistem Informasi</td>
-                    <td>dd/mm/yyyy</td>
-                    <td>XXXXXXXXXXXXXXXXXX</td>
-                    <td>Event Kampus</td>
-                    <td>Rejected</td>
-                    <td>-</td>
-                </tr>
+            <tbody id="rekapTableBody">
+                @forelse($rekapRows as $row)
+                    <tr>
+                        <td>{{ $row['unit'] }}</td>
+                        <td>{{ $row['tanggal'] }}</td>
+                        <td>
+                            <a href="{{ $row['show_url'] }}" class="btn-judul">{{ $row['judul_berita'] }}</a>
+                        </td>
+                        <td>{{ $row['kategori'] }}</td>
+                        <td>{{ $row['status'] }}</td>
+                        <td>
+                            @if($row['status'] === 'Publish' && !empty($row['link_publikasi']))
+                                <a href="{{ $row['link_publikasi'] }}" target="_blank" rel="noopener noreferrer" class="action-link">Link</a>
+                            @else
+                                -
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" style="text-align: center;">Belum ada data pengajuan berita.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
 
@@ -346,14 +373,35 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        Chart.defaults.font.family = "'Poppins', sans-serif";
+
+        const REKAP_DATA_URL = @json(route('admin.rekapitulasi'));
+        const REKAP_EXPORT_URL = @json(route('admin.rekapitulasi.export'));
+        const CHART_PALETTE = ['#ff0055', '#2ed573', '#1e90ff', '#feca57', '#ff6b6b', '#5f27cd', '#10ac84', '#ff9f43', '#54a0ff', '#ee5253'];
+
+        function getPieColors(count) {
+            if (count === 0) return ['#e0e0e0'];
+            return Array.from({ length: count }, (_, i) => CHART_PALETTE[i % CHART_PALETTE.length]);
+        }
+
+        function buildPieDataset(pie) {
+            const hasData = pie.labels && pie.labels.length > 0;
+            return {
+                labels: hasData ? pie.labels : ['Belum ada data'],
+                data: hasData ? pie.data : [1],
+                colors: hasData ? getPieColors(pie.labels.length) : ['#e0e0e0'],
+            };
+        }
+
+        const initialPie = buildPieDataset(@json($pieChartData));
         const pieCtx = document.getElementById('kategoriPieChart').getContext('2d');
-        new Chart(pieCtx, {
+        const pieChart = new Chart(pieCtx, {
             type: 'pie',
             data: {
-                labels: ['Riset Dosen (Informatika)', 'Prestasi Mahasiswa', 'Event Kampus', 'Pengabdian Masyarakat'],
+                labels: initialPie.labels,
                 datasets: [{
-                    data: [35, 25, 20, 20],
-                    backgroundColor: ['#ff0055', '#2ed573', '#1e90ff', '#feca57'],
+                    data: initialPie.data,
+                    backgroundColor: initialPie.colors,
                     borderWidth: 1
                 }]
             },
@@ -362,20 +410,21 @@
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: { font: { family: 'Segoe UI' } }
+                        labels: { font: { family: 'Poppins' } }
                     }
                 }
             }
         });
 
+        const initialStatus = @json($statusCounts);
         const barCtx = document.getElementById('statusBarChart').getContext('2d');
-        new Chart(barCtx, {
+        const barChart = new Chart(barCtx, {
             type: 'bar',
             data: {
                 labels: ['Publish', 'Rejected'],
                 datasets: [{
                     label: 'Jumlah Berita',
-                    data: [65, 8],
+                    data: [initialStatus.publish ?? 0, initialStatus.rejected ?? 0],
                     backgroundColor: ['#ff4d4f', '#ff4d4f'],
                     borderRadius: 4
                 }]
@@ -389,6 +438,7 @@
                 scales: {
                     x: {
                         beginAtZero: true,
+                        ticks: { precision: 0 },
                         grid: { display: false }
                     },
                     y: {
@@ -397,5 +447,106 @@
                 }
             }
         });
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function isSafeHttpUrl(url) {
+            return typeof url === 'string' && /^https?:\/\//i.test(url.trim());
+        }
+
+        function renderTableRows(rows) {
+            const tbody = document.getElementById('rekapTableBody');
+            if (!rows || rows.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Belum ada data pengajuan berita.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = rows.map(row => {
+                const aksiHtml = (row.status === 'Publish' && isSafeHttpUrl(row.link_publikasi))
+                    ? `<a href="${escapeHtml(row.link_publikasi)}" target="_blank" rel="noopener noreferrer" class="action-link">Link</a>`
+                    : '-';
+
+                return `
+                    <tr>
+                        <td>${escapeHtml(row.unit)}</td>
+                        <td>${escapeHtml(row.tanggal)}</td>
+                        <td><a href="${escapeHtml(row.show_url)}" class="btn-judul">${escapeHtml(row.judul_berita)}</a></td>
+                        <td>${escapeHtml(row.kategori)}</td>
+                        <td>${escapeHtml(row.status)}</td>
+                        <td>${aksiHtml}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        const filterPeriode = document.getElementById('filterPeriode');
+        const filterTanggal = document.getElementById('filterTanggal');
+        const filterKategori = document.getElementById('filterKategori');
+        const btnDownloadLaporan = document.getElementById('btnDownloadLaporan');
+
+        function buildFilterQuery() {
+            const params = new URLSearchParams();
+            if (filterPeriode.value) params.set('periode', filterPeriode.value);
+            if (filterTanggal.value) params.set('tanggal', filterTanggal.value);
+            if (filterKategori.value) params.set('kategori_id', filterKategori.value);
+            return params.toString();
+        }
+
+        let isFetching = false;
+        async function refreshRekapitulasi() {
+            if (isFetching) return;
+            isFetching = true;
+
+            try {
+                const query = buildFilterQuery();
+                const exportUrl = query ? `${REKAP_EXPORT_URL}?${query}` : REKAP_EXPORT_URL;
+                btnDownloadLaporan.setAttribute('href', exportUrl);
+
+                const dataUrl = query ? `${REKAP_DATA_URL}?${query}` : REKAP_DATA_URL;
+                const response = await fetch(dataUrl, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+
+                if (!response.ok) return;
+                const payload = await response.json();
+
+                renderTableRows(payload.rows);
+
+                const updatedPie = buildPieDataset(payload.pie || {});
+                pieChart.data.labels = updatedPie.labels;
+                pieChart.data.datasets[0].data = updatedPie.data;
+                pieChart.data.datasets[0].backgroundColor = updatedPie.colors;
+                pieChart.update();
+
+                const statusData = payload.status || {};
+                barChart.data.datasets[0].data = [statusData.publish ?? 0, statusData.rejected ?? 0];
+                barChart.update();
+            } catch (error) {
+                console.error('Gagal memuat pembaruan rekapitulasi:', error);
+            } finally {
+                isFetching = false;
+            }
+        }
+
+        filterPeriode.addEventListener('change', refreshRekapitulasi);
+        filterTanggal.addEventListener('change', refreshRekapitulasi);
+        filterKategori.addEventListener('change', refreshRekapitulasi);
+
+        // Sinkronisasi otomatis dengan database setiap 10 detik saat tab aktif
+        setInterval(() => {
+            if (!document.hidden) {
+                refreshRekapitulasi();
+            }
+        }, 10000);
     </script>
 @endpush

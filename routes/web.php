@@ -14,6 +14,7 @@ Route::get('/', function () {
 
 // AUTENTIKASI
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.proses');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.proses');
@@ -21,6 +22,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.pr
 // USER
 Route::prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', [PengajuanBeritaController::class, 'userDashboard'])->name('dashboard');
+    Route::get('/pengajuan', [PengajuanBeritaController::class, 'create'])->name('pengajuan');
     Route::post('/pengajuan', [PengajuanBeritaController::class, 'store'])->name('pengajuan.store');
     Route::get('/monitoring', [PengajuanBeritaController::class, 'monitoring'])->name('monitoring');
 });
@@ -32,7 +34,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/detail-pengajuan/{id}', [PengajuanBeritaController::class, 'show'])->name('pengajuan.show');
     Route::patch('/update-status/{id}', [PengajuanBeritaController::class, 'updateStatus'])->name('pengajuan.updateStatus');
     Route::get('/rekapitulasi', [PengajuanBeritaController::class, 'rekapitulasi'])->name('rekapitulasi');
+    Route::get('/rekapitulasi/export', [PengajuanBeritaController::class, 'exportRekapitulasi'])->name('rekapitulasi.export');
 
+    // Manajemen (Users, Kategori, Prodi)
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 

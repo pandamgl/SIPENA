@@ -8,6 +8,7 @@ use App\Models\ProdiUnit;
 use App\Models\LogAksiAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use App\Rules\RecaptchaV2;
 
 class PengajuanBeritaController extends Controller
@@ -85,18 +86,54 @@ class PengajuanBeritaController extends Controller
     }
 
     // Dashboard Admin
-    public function adminDashboard()
+    public function adminDashboard(Request $request)
     {
         $antreanCount = PengajuanBerita::where('status', 'In Review')->count();
         $publikasiCount = PengajuanBerita::where('status', 'Publish')->count();
         $masukCount = PengajuanBerita::count();
 
-        $antreanList = PengajuanBerita::with(['user.prodiUnit', 'kategori'])
-            ->where('status', 'In Review')
-            ->latest()
-            ->paginate(10);
+        $perPage = (int) $request->input('per_page', 10);
+        if (!in_array($perPage, [10, 25, 50], true)) {
+            $perPage = 10;
+        }
 
-        return view('admin.dashboard', compact('antreanCount', 'publikasiCount', 'masukCount', 'antreanList'));
+        $search = trim((string) $request->input('search', ''));
+
+        $antreanQuery = PengajuanBerita::with(['user.prodiUnit', 'kategori'])
+            ->where('status', 'In Review')
+            ->latest();
+
+        if ($search !== '') {
+            $antreanQuery->where(function ($q) use ($search) {
+                $q->where('judul_berita', 'like', "%{$search}%")
+                    ->orWhereHas('kategori', function ($kq) use ($search) {
+                        $kq->where('nama_kategori', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $antreanList = $antreanQuery->paginate($perPage)->withQueryString();
+
+        if ($request->expectsJson() || $request->ajax()) {
+            $rows = $antreanList->getCollection()->map(function ($item) {
+                return [
+                    'tanggal' => Carbon::parse($item->tanggal_mulai)->format('d/m/Y'),
+                    'judul_berita' => $item->judul_berita,
+                    'kategori' => $item->kategori->nama_kategori ?? '-',
+                    'status' => $item->status,
+                    'show_url' => route('admin.pengajuan.show', $item->id),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'antreanCount' => $antreanCount,
+                'publikasiCount' => $publikasiCount,
+                'masukCount' => $masukCount,
+                'rows' => $rows,
+            ]);
+        }
+
+        return view('admin.dashboard', compact('antreanCount', 'publikasiCount', 'masukCount', 'antreanList', 'perPage', 'search'));
     }
 
     // Kelola Pengajuan (Admin)
@@ -151,9 +188,149 @@ class PengajuanBeritaController extends Controller
     }
 
     // Rekapitulasi Laporan (Admin)
-    public function rekapitulasi()
+    public function rekapitulasi(Request $request)
     {
-        $rekapData = PengajuanBerita::with(['user.prodiUnit', 'kategori'])->latest()->get();
-        return view('admin.rekapitulasi', compact('rekapData'));
+        $payload = $this->buildRekapPayload($request);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'rows' => $payload['rows'],
+                'pie' => $payload['pie'],
+                'status' => $payload['status'],
+            ]);
+        }
+
+        $kategoriList = KategoriBerita::orderBy('nama_kategori')->get();
+
+        return view('admin.rekapitulasi', [
+            'rekapData' => $payload['records'],
+            'rekapRows' => $payload['rows'],
+            'pieChartData' => $payload['pie'],
+            'statusCounts' => $payload['status'],
+            'kategoriList' => $kategoriList,
+            'filters' => [
+                'periode' => $request->input('periode', ''),
+                'tanggal' => $request->input('tanggal', ''),
+                'kategori_id' => $request->input('kategori_id', ''),
+            ],
+        ]);
+    }
+
+    // Unduh Laporan Rekapitulasi (CSV kompatibel Excel)
+    public function exportRekapitulasi(Request $request)
+    {
+        $rekapData = $this->filteredRekapQuery($request)->get();
+        $filename = 'rekapitulasi-berita-' . now()->format('Y-m-d_His') . '.csv';
+
+        return response()->streamDownload(function () use ($rekapData) {
+            $handle = fopen('php://output', 'w');
+            // UTF-8 BOM agar karakter terbaca benar di Microsoft Excel
+            fwrite($handle, "\xEF\xBB\xBF");
+            fputcsv($handle, ['No', 'Unit', 'Tanggal', 'Judul Berita', 'Kategori Berita', 'Status', 'Link Publikasi']);
+
+            foreach ($rekapData as $index => $item) {
+                fputcsv($handle, [
+                    $index + 1,
+                    $item->user->prodiUnit->nama_prodi_unit ?? '-',
+                    $item->tanggal_mulai ? Carbon::parse($item->tanggal_mulai)->format('d/m/Y') : '-',
+                    $item->judul_berita,
+                    $item->kategori->nama_kategori ?? '-',
+                    $item->status,
+                    $item->link_publikasi ?? '-',
+                ]);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
+    /**
+     * Bangun query pengajuan berita berdasarkan filter periode, tanggal, dan kategori.
+     */
+    private function filteredRekapQuery(Request $request)
+    {
+        $query = PengajuanBerita::with(['user.prodiUnit', 'kategori'])->latest();
+
+        $periode = $request->input('periode');
+        $tanggal = $request->input('tanggal');
+        $kategoriId = $request->input('kategori_id');
+
+        if (!empty($kategoriId)) {
+            $query->where('kategori_id', $kategoriId);
+        }
+
+        $refDate = now();
+        $hasValidTanggal = false;
+        if (!empty($tanggal)) {
+            try {
+                $refDate = Carbon::parse($tanggal);
+                $hasValidTanggal = true;
+            } catch (\Throwable $e) {
+                $hasValidTanggal = false;
+            }
+        }
+
+        $quarterMonths = [
+            'q1' => [1, 3],
+            'q2' => [4, 6],
+            'q3' => [7, 9],
+            'q4' => [10, 12],
+        ];
+
+        if ($periode === 'bulanan') {
+            $query->whereYear('tanggal_mulai', $refDate->year)
+                ->whereMonth('tanggal_mulai', $refDate->month);
+        } elseif (isset($quarterMonths[$periode])) {
+            [$startMonth, $endMonth] = $quarterMonths[$periode];
+            $query->whereYear('tanggal_mulai', $refDate->year)
+                ->whereMonth('tanggal_mulai', '>=', $startMonth)
+                ->whereMonth('tanggal_mulai', '<=', $endMonth);
+        } elseif ($hasValidTanggal) {
+            $query->whereDate('tanggal_mulai', $refDate->toDateString());
+        }
+
+        return $query;
+    }
+
+    /**
+     * Siapkan data tabel serta agregasi grafik untuk tampilan maupun endpoint JSON real-time.
+     */
+    private function buildRekapPayload(Request $request): array
+    {
+        $records = $this->filteredRekapQuery($request)->get();
+
+        $pieGrouped = $records->groupBy(function ($item) {
+            $kategori = $item->kategori->nama_kategori ?? 'Tanpa Kategori';
+            $unit = $item->user->prodiUnit->nama_prodi_unit ?? 'Tanpa Unit';
+            return "{$kategori} ({$unit})";
+        })->map->count()->sortDesc();
+
+        $rows = $records->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'unit' => $item->user->prodiUnit->nama_prodi_unit ?? '-',
+                'tanggal' => $item->tanggal_mulai ? Carbon::parse($item->tanggal_mulai)->format('d/m/Y') : '-',
+                'judul_berita' => $item->judul_berita,
+                'show_url' => route('admin.pengajuan.show', $item->id),
+                'kategori' => $item->kategori->nama_kategori ?? '-',
+                'status' => $item->status,
+                'link_publikasi' => $item->link_publikasi ?: null,
+            ];
+        })->values()->all();
+
+        return [
+            'records' => $records,
+            'rows' => $rows,
+            'pie' => [
+                'labels' => $pieGrouped->keys()->values()->all(),
+                'data' => $pieGrouped->values()->all(),
+            ],
+            'status' => [
+                'publish' => $records->where('status', 'Publish')->count(),
+                'rejected' => $records->where('status', 'Rejected')->count(),
+            ],
+        ];
     }
 }
